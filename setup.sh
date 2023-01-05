@@ -1125,8 +1125,8 @@ cat > /etc/nginx/conf.d/xray.conf << EOF
 }
 EOF
 
-systemctl restart nginx
-systemctl restart xray
+service nginx restart
+service xray restart
 
 echo "net.core.default_qdisc=fq" >> /etc/sysctl.conf
 echo "net.ipv4.tcp_congestion_control=bbr" >> /etc/sysctl.conf
