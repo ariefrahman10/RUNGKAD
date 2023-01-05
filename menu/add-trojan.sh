@@ -44,7 +44,7 @@ echo -e "Host/IP          : ${domain}" | tee -a log-create-user.log
 echo -e "Wildcard         : (bug.com).${domain}" | tee -a log-create-user.log
 echo -e "Port TLS         : 443" | tee -a log-create-user.log
 echo -e "Port gRPC        : 443" | tee -a log-create-user.log
-echo -e "Password         : ${uuid}" | tee -a log-create-user.log
+echo -e "Password         : ${user}" | tee -a log-create-user.log
 echo -e "Network          : Websocket, gRPC" | tee -a log-create-user.log
 echo -e "Path Websocket   : /trojan-ws" | tee -a log-create-user.log
 echo -e "ServiceName      : trojangrpc" | tee -a log-create-user.log
