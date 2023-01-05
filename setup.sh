@@ -864,7 +864,7 @@ EOF
 rm -rf /etc/systemd/system/xray.service.d
 rm -rf /etc/systemd/system/xray@.service
 rm -rf /etc/systemd/system/xray@.service.d
-cat <<EOF> /etc/systemd/system/xray.service
+cat > /etc/systemd/system/xray.service <<EOF
 Description=Xray Service
 Documentation=https://github.com/xtls
 After=network.target nss-lookup.target
