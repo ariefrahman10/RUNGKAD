@@ -861,6 +861,7 @@ cat <<EOF> /usr/local/etc/xray/sockswshttp.json
 {}
 EOF
 
+#startup and service 
 rm -rf /etc/systemd/system/xray.service.d
 rm -rf /etc/systemd/system/xray@.service
 rm -rf /etc/systemd/system/xray@.service.d
@@ -904,6 +905,26 @@ LimitNOFILE=1000000
 WantedBy=multi-user.target
 EOF
 
+rm -rf /etc/systemd/system/xray.service.d/10-donot_touch_multi_conf.conf
+rm -rf /etc/systemd/system/xray@.service.d/10-donot_touch_multi_conf.conf
+
+cat > /etc/systemd/system/xray.service.d/10-donot_touch_multi_conf.conf << EOF
+# In case you have a good reason to do so, duplicate this file in the same directory and make your customizes there.
+# Or all changes you made will be lost!  # Refer: https://www.freedesktop.org/software/systemd/man/systemd.unit.html
+[Service]
+ExecStart=
+ExecStart=/usr/local/bin/xray run -config /usr/local/etc/xray/config.json
+EOF
+
+cat > /etc/systemd/system/xray@.service.d/10-donot_touch_multi_conf.conf << EOF
+# In case you have a good reason to do so, duplicate this file in the same directory and make your customizes there.
+# Or all changes you made will be lost!  # Refer: https://www.freedesktop.org/software/systemd/man/systemd.unit.html
+[Service]
+ExecStart=
+ExecStart=/usr/local/bin/xray run -config /usr/local/etc/xray/%i.json
+EOF
+
+systemctl daemon-reload
 
 # Set Nginx Conf
 cat > /etc/nginx/nginx.conf << EOF
