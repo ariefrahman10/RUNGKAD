@@ -557,7 +557,7 @@ cat <<EOF> /usr/local/etc/xray/vmessgrpc.json
         "network": "grpc",
         "security": "none",
         "grpcSettings": {
-          "serviceName": "netzvmessgrpc"
+          "serviceName": "vmessgrpc"
         }
       },
       "sniffing": {
@@ -750,7 +750,6 @@ EOF
 
 cat <<EOF> /usr/local/etc/xray/vmesswsnontls.json
 {
-  {
   "log": {
     "loglevel": "info",
   },
@@ -1187,7 +1186,6 @@ wget -O m-vmess "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/me
 wget -O m-vless "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/m-vless.sh"
 wget -O m-trojan "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/m-trojan.sh"
 wget -O m-warp "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/m-warp.sh"
-wget -O all-xray "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/all-xray.sh"
 wget -O xraymod "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/xraymod.sh"
 wget -O xrayofficial "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/xrayofficial.sh"
 wget -O kernel-bbr "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/kernel-bbr.sh"
@@ -1199,7 +1197,6 @@ chmod +x m-vmess
 chmod +x m-vless
 chmod +x m-trojan
 chmod +x m-warp
-chmod +x all-xray
 chmod +x xraymod
 chmod +x xrayofficial
 chmod +x kernel-bbr
