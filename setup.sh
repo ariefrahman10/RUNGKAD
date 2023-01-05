@@ -417,7 +417,7 @@ cat <<EOF> /usr/local/etc/xray/trojanwstls.json
       }
     ]
   }
-
+}
 EOF
 
 cat <<EOF> /usr/local/etc/xray/sockswstls.json
