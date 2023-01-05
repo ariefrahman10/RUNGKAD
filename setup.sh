@@ -1024,12 +1024,12 @@ cat > /etc/nginx/conf.d/xray.conf << EOF
         listen [::]:443 ssl http2;
         server_name 127.0.0.1 localhost;
 
-        ssl_certificate /etc/adi/adi.crt;
-        ssl_certificate_key /etc/adi/adi.key;
-
-        ssl_protocols TLSv1.2 TLSv1.3;
-        ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20->
-        ssl_prefer_server_ciphers on;
+        ssl_certificate /usr/local/etc/xray/xray.crt;
+        ssl_certificate_key /usr/local/etc/xray/xray.key;
+        ssl_ciphers EECDH+CHACHA20:EECDH+CHACHA20-draft:EECDH+ECDSA+AES128:EECDH+aRSA+AES128:RSA+AES128:EECDH+ECDSA+AES256:EECDH+aRSA+AES256:RSA+AES256:EECDH+ECDSA+3DES:EECDH+aRSA+3DES:RSA+3DES:!MD5;
+        ssl_protocols TLSv1.1 TLSv1.2 TLSv1.3;
+        }
+EOF
 
         location = /vless-ws {
             proxy_redirect off;
