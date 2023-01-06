@@ -92,11 +92,11 @@ bash acme.sh --issue -d $domain --server letsencrypt --keylength ec-256 --fullch
 # Setting
 uuid=$(cat /proc/sys/kernel/random/uuid)
 # xray config
-cat <<EOF> /usr/local/etc/xray/config.json
+cat << EOF > /usr/local/etc/xray/config.json
 {}
 EOF
 
-cat <<EOF> /usr/local/etc/xray/vlesswstls.json
+cat << EOF > /usr/local/etc/xray/vlesswstls.json
 {
   "log": {
     "loglevel": "info",
