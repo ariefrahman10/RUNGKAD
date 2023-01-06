@@ -856,21 +856,19 @@ cat <<EOF> /usr/local/etc/xray/vmesswsnontls.json
   }
 }
 EOF
-cat <<EOF> /usr/local/etc/xray/sockswshttp.json
-{}
-EOF
 
-#startup and service 
-rm -rf /etc/systemd/system/xray.service.d
-rm -rf /etc/systemd/system/xray@.service
-rm -rf /etc/systemd/system/xray@.service.d
+#install_startup_service_file
+mkdir -p '/etc/systemd/system/xray.service.d'
+mkdir -p '/etc/systemd/system/xray@.service.d/'
+
 cat > /etc/systemd/system/xray.service <<EOF
+[Unit]
 Description=Xray Service
 Documentation=https://github.com/xtls
 After=network.target nss-lookup.target
 
 [Service]
-User=www-data
+User=nobody
 CapabilityBoundingSet=CAP_NET_ADMIN CAP_NET_BIND_SERVICE
 AmbientCapabilities=CAP_NET_ADMIN CAP_NET_BIND_SERVICE
 NoNewPrivileges=true
@@ -885,12 +883,13 @@ WantedBy=multi-user.target
 EOF
 
 cat > /etc/systemd/system/xray@.service <<EOF
+[Unit]
 Description=Xray Service
 Documentation=https://github.com/xtls
 After=network.target nss-lookup.target
 
 [Service]
-User=www-data
+User=nobody
 CapabilityBoundingSet=CAP_NET_ADMIN CAP_NET_BIND_SERVICE
 AmbientCapabilities=CAP_NET_ADMIN CAP_NET_BIND_SERVICE
 NoNewPrivileges=true
@@ -904,8 +903,6 @@ LimitNOFILE=1000000
 WantedBy=multi-user.target
 EOF
 
-rm -rf /etc/systemd/system/xray.service.d/10-donot_touch_multi_conf.conf
-rm -rf /etc/systemd/system/xray@.service.d/10-donot_touch_multi_conf.conf
 
 cat > /etc/systemd/system/xray.service.d/10-donot_touch_multi_conf.conf << EOF
 # In case you have a good reason to do so, duplicate this file in the same directory and make your customizes there.
@@ -923,7 +920,13 @@ ExecStart=
 ExecStart=/usr/local/bin/xray run -config /usr/local/etc/xray/%i.json
 EOF
 
+chmod +x /etc/systemd/system/xray@.service
+chmod +x /etc/systemd/system/xray@.service.d/10-donot_touch_multi_conf.conf
+systemctl enable xray@.service
+systemctl start xray@.service
+systemctl enable xray.service
 systemctl daemon-reload
+systemctl restart xray
 
 # Set Nginx Conf
 cat > /etc/nginx/nginx.conf << EOF
@@ -1064,17 +1067,6 @@ EOF
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         }
 
-        location = /socks-ws {
-            proxy_redirect off;
-            proxy_pass http://127.0.0.1:2004;
-            proxy_http_version 1.1;
-            proxy_set_header Upgrade $http_upgrade;
-            proxy_set_header Connection "upgrade";
-            proxy_set_header Host $http_host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        }
-
         location /vlessgrpc {
             if ($request_method != "POST") {
                 return 404;
@@ -1084,7 +1076,7 @@ EOF
             client_max_body_size 0;
             grpc_read_timeout 1h;
             grpc_send_timeout 1h;
-                        grpc_set_header X-Real-IP $remote_addr;
+            grpc_set_header X-Real-IP $remote_addr;
             grpc_pass grpc://127.0.0.1:2005;
         }
 
@@ -1097,7 +1089,7 @@ EOF
             client_max_body_size 0;
             grpc_read_timeout 1h;
             grpc_send_timeout 1h;
-                        grpc_set_header X-Real-IP $remote_addr;
+            grpc_set_header X-Real-IP $remote_addr;
             grpc_pass grpc://127.0.0.1:2006;
         }
         location /trojangrpc {
@@ -1109,7 +1101,7 @@ EOF
             client_max_body_size 0;
             grpc_read_timeout 1h;
             grpc_send_timeout 1h;
-                        grpc_set_header X-Real-IP $remote_addr;
+            grpc_set_header X-Real-IP $remote_addr;
             grpc_pass grpc://127.0.0.1:2007;
         }
 
