@@ -78,674 +78,22 @@ read -rp "Input domain kamu : " -e dns
 if [ -z $dns ]; then
 echo -e "Nothing input for domain!"
 else
-echo "$dns" > /usr/local/etc/xray/domain
+echo "$dns" > /etc/xray/domain
 fi
 
 # Install Cert
 systemctl stop nginx
-domain=$(cat /usr/local/etc/xray/domain)
+domain=$(cat /etc/xray/domain)
 curl https://get.acme.sh | sh
 source ~/.bashrc
 cd .acme.sh
-bash acme.sh --issue -d $domain --server letsencrypt --keylength ec-256 --fullchain-file /usr/local/etc/xray/xray.crt --key-file /usr/local/etc/xray/xray.key --standalone --force
+bash acme.sh --issue -d $domain --server letsencrypt --keylength ec-256 --fullchain-file /etc/xray/xray.crt --key-file /etc/xray/xray.key --standalone --force
 
 # Setting
 uuid=$(cat /proc/sys/kernel/random/uuid)
 # xray config
 cat << EOF > /usr/local/etc/xray/config.json
 {}
-EOF
-
-cat << EOF > /usr/local/etc/xray/vlesswstls.json
-{
-  "log": {
-    "loglevel": "info",
-  },
-  "inbounds": [
-    {
-      "tag": "vlesswstls",
-      "port": 2001,
-      "protocol": "vless",
-      "settings": {
-        "clients": [
-          {
-            "email": "admin",
-            "id": "${uuid}",
-            "level": 0,
-            "alterId": 0
-#vlessws            
-          }
-        ],
-        "decryption": "none"
-      },
-      "streamSettings": {
-        "network": "ws",
-        "security": "none",
-        "wsSettings": {
-          "path": "/vless-ws"
-        }
-      },
-      "sniffing": {
-        "enabled": true,
-        "destOverride": [
-          "http",
-          "tls"
-        ]
-      }
-    },
-    {
-      "listen": "127.0.0.1",
-      "port": 10084,
-      "protocol": "dokodemo-door",
-      "settings": {
-        "address": "127.0.0.1"
-      },
-      "tag": "api"
-    }
-  ],
-  "outbounds": [
-    {
-      "tag": "direct",
-      "protocol": "freedom",
-      "settings": {}
-    },
-    {
-      "protocol": "socks",
-      "settings": {
-        "servers": [
-          {
-            "address": "127.0.0.1",
-            "port": 40000
-          }
-        ]
-      },
-      "tag": "socks5-warp"
-    }
-  ],
-  "routing": {
-    "domainStrategy": "IPOnDemand",
-    "rules": [
-      {
-        "inboundTag": [
-          "api"
-        ],
-        "outboundTag": "api",
-        "type": "field"
-      },
-      {
-        "type": "field",
-        "ip": [
-          "0.0.0.0/8",
-          "10.0.0.0/8",
-          "100.64.0.0/10",
-          "127.0.0.0/8",
-          "169.254.0.0/16",
-          "172.16.0.0/12",
-          "192.0.0.0/24",
-          "192.0.2.0/24",
-          "192.168.0.0/16",
-          "198.18.0.0/15",
-          "198.51.100.0/24",
-          "203.0.113.0/24",
-          "::1/128",
-          "fc00::/7",
-          "fe80::/10"
-        ],
-        "outboundTag": "blocked"
-      },
-      {
-        "type": "field",
-        "protocol": [
-          "bittorrent"
-        ],
-        "outboundTag": "blocked"
-      }
-    ]
-  }
-}
-EOF
-
-cat <<EOF> /usr/local/etc/xray/vmesswstls.json
-{
-  "log": {
-    "loglevel": "info",
-  },
-  "inbounds": [
-    {
-      "tag": "vmesswstls",
-      "port": 2002,
-      "protocol": "vmess",
-      "settings": {
-        "clients": [
-          {
-            "email": "admin",
-            "id": "${uuid}",
-            "level": 0,   
-            "alterId": 0
-#vmessws
-          }
-        ],
-        "decryption": "none"
-      },
-      "streamSettings": {
-        "network": "ws",
-        "security": "none",
-        "wsSettings": {
-          "path": "/vmess-ws"
-        }
-      },
-      "sniffing": {
-        "enabled": true,
-        "destOverride": [
-          "http",
-          "tls"
-        ]
-      }
-    },
-    {
-      "listen": "127.0.0.1",
-      "port": 10082,
-      "protocol": "dokodemo-door",
-      "settings": {
-        "address": "127.0.0.1"
-      },
-      "tag": "api"
-    }
-  ],
-  "outbounds": [
-    {
-      "tag": "direct",
-      "protocol": "freedom",
-      "settings": {}
-    },
-    {
-      "protocol": "socks",
-      "settings": {
-        "servers": [
-          {
-            "address": "127.0.0.1",
-            "port": 40000
-          }
-        ]
-      },
-      "tag": "socks5-warp"
-    }
-  ],
-  "routing": {
-    "domainStrategy": "IPOnDemand",
-    "rules": [
-      {
-        "inboundTag": [
-          "api"
-        ],
-        "outboundTag": "api",
-        "type": "field"
-      },
-      {
-        "type": "field",
-       "ip": [
-          "0.0.0.0/8",
-          "10.0.0.0/8",
-          "100.64.0.0/10",
-          "127.0.0.0/8",
-          "169.254.0.0/16",
-          "172.16.0.0/12",
-          "192.0.0.0/24",
-          "192.0.2.0/24",
-          "192.168.0.0/16",
-          "198.18.0.0/15",
-          "198.51.100.0/24",
-          "203.0.113.0/24",
-          "::1/128",
-          "fc00::/7",
-          "fe80::/10"
-        ],
-        "outboundTag": "blocked"
-      },
-      {
-        "type": "field",
-        "protocol": [
-          "bittorrent"
-        ],
-        "outboundTag": "blocked"
-      }
-    ]
-  }
-}
-EOF
-
-cat <<EOF> /usr/local/etc/xray/trojanwstls.json
-{
-  "log": {
-    "loglevel": "info",
-  },
-  "inbounds": [
-    {
-      "tag": "trojanws",
-      "port": 2003,
-      "protocol": "trojan",
-      "settings": {
-        "clients": [
-          {
-            "password": "admin",
-            "email": "admin"
-#trojanws            
-          }
-      },
-      "streamSettings": {
-        "network": "ws",
-        "security": "none",
-        "wsSettings": {
-          "path": "/trojan-ws"
-        }
-      },
-      "sniffing": {
-        "enabled": true,
-        "destOverride": [
-          "http",
-          "tls"
-        ]
-      }
-    },
-    {
-      "listen": "127.0.0.1",
-      "port": 10086,
-      "protocol": "dokodemo-door",
-      "settings": {
-        "address": "127.0.0.1"
-      },
-      "tag": "api"
-    }
-  ],
-  "outbounds": [
-    {
-      "protocol": "freedom",
-      "settings": {
-        "domainStrategy": "UseIPv4"
-      },
-      "tag": "IPv4-out"
-    },
-    {
-      "protocol": "freedom",
-      "settings": {
-        "domainStrategy": "UseIPv6"
-      },
-      "tag": "IPv6-out"
-    },
-    {
-      "protocol": "blackhole",
-      "settings": {
-        "response": {
-          "type": "http"
-        }
-      },
-      "tag": "block"
-    }
-  ],
-    "routing": {
-    "domainStrategy": "IPIfNonMatch",
-    "rules": [
-      {
-        "type": "field",
-        "ip": [
-          "1.1.1.1",
-          "1.0.0.1"
-        ],
-        "outboundTag": "IPv4-out"
-      },
-      {
-        "type": "field",
-        "domain": [
-          "geosite:rule-ads",
-          "geosite:rule-malicious"
-        ],
-        "outboundTag": "block"
-      },
-      {
-        "type": "field",
-        "ip": [
-          "geoip:cn"
-        ],
-        "outboundTag": "block"
-      },
-      {
-        "inboundTag": [
-          "api"
-        ],
-        "outboundTag": "api",
-        "type": "field"
-      }
-    ]
-  }
-}
-EOF
-
-cat <<EOF> /usr/local/etc/xray/sockswstls.json
-{}    
-EOF
-
-cat <<EOF> /usr/local/etc/xray/vlessgrpc.json
-{
-  "log": {
-    "loglevel": "info",
-  },
-  "inbounds": [
-    {
-      "tag": "vlessgrpc",
-      "port": 2005,
-      "protocol": "vless",
-      "settings": {
-        "clients": [
-          {
-            "email": "admin",
-            "id": "${uuid}",
-            "level": 0
-#vlessgrpc
-          }
-        ],
-        "decryption": "none"
-      },
-      "streamSettings": {
-        "network": "grpc",
-        "security": "none",
-        "grpcSettings": {
-          "serviceName": "vlessgrpc"
-        }
-      },
-      "sniffing": {
-        "enabled": true,
-        "destOverride": [
-          "http",
-          "tls"
-        ]
-      }
-    },
-    {
-      "listen": "127.0.0.1",
-      "port": 10085,
-      "protocol": "dokodemo-door",
-      "settings": {
-        "address": "127.0.0.1"
-      },
-      "tag": "api"
-    }
-  ],
-  "outbounds": [
-    {
-      "tag": "direct",
-      "protocol": "freedom",
-      "settings": {}
-    },
-    {
-      "protocol": "socks",
-      "settings": {
-        "servers": [
-          {
-            "address": "127.0.0.1",
-            "port": 40000
-          }
-        ]
-      },
-      "tag": "socks5-warp"
-    }
-  ],
-  "routing": {
-    "domainStrategy": "IPOnDemand",
-    "rules": [
-      {
-        "inboundTag": [
-          "api"
-        ],
-        "outboundTag": "api",
-        "type": "field"
-      },
-      {
-        "type": "field",
-        "ip": [
-          "0.0.0.0/8",
-          "10.0.0.0/8",
-          "100.64.0.0/10",
-          "127.0.0.0/8",
-          "169.254.0.0/16",
-          "172.16.0.0/12",
-          "192.0.0.0/24",
-          "192.0.2.0/24",
-          "192.168.0.0/16",
-          "198.18.0.0/15",
-          "198.51.100.0/24",
-          "203.0.113.0/24",
-          "::1/128",
-          "fc00::/7",
-          "fe80::/10"
-        ],
-        "outboundTag": "blocked"
-      },
-      {
-        "type": "field",
-        "protocol": [
-          "bittorrent"
-        ],
-        "outboundTag": "blocked"
-      }
-    ]
-  }
-}
-EOF
-
-cat <<EOF> /usr/local/etc/xray/vmessgrpc.json
-{
-  "log": {
-    "loglevel": "info"
-  },
-  "inbounds": [
-    {
-      "tag": "vmessgrpc",
-      "port": 2006,
-      "protocol": "vmess",
-      "settings": {
-        "clients": [
-          {
-            "email": "admin",
-            "id": "${uuid}",
-            "level": 0
-#vmessgrpc
-          }
-        ],
-        "decryption": "none"
-      },
-      "streamSettings": {
-        "network": "grpc",
-        "security": "none",
-        "grpcSettings": {
-          "serviceName": "vmessgrpc"
-        }
-      },
-      "sniffing": {
-        "enabled": true,
-        "destOverride": [
-          "http",
-          "tls"
-        ]
-      }
-    },
-    {
-      "listen": "127.0.0.1",
-      "port": 10083,
-      "protocol": "dokodemo-door",
-      "settings": {
-        "address": "127.0.0.1"
-      },
-      "tag": "api"
-    }
-  ],
-  "outbounds": [
-    {
-      "tag": "direct",
-      "protocol": "freedom",
-      "settings": {}
-    },
-    {
-      "protocol": "socks",
-      "settings": {
-        "servers": [
-          {
-            "address": "127.0.0.1",
-            "port": 40000
-          }
-        ]
-      },
-      "tag": "socks5-warp"
-    }
-  ],
-  "routing": {
-    "domainStrategy": "IPOnDemand",
-    "rules": [
-      {
-        "inboundTag": [
-          "api"
-        ],
-        "outboundTag": "api",
-        "type": "field"
-      },
-      {
-        "type": "field",
-        "ip": [
-          "0.0.0.0/8",
-          "10.0.0.0/8",
-          "100.64.0.0/10",
-          "127.0.0.0/8",
-          "169.254.0.0/16",
-          "172.16.0.0/12",
-          "192.0.0.0/24",
-          "192.0.2.0/24",
-          "192.168.0.0/16",
-          "198.18.0.0/15",
-          "198.51.100.0/24",
-          "203.0.113.0/24",
-          "::1/128",
-          "fc00::/7",
-          "fe80::/10"
-        ],
-        "outboundTag": "blocked"
-      },
-      {
-        "type": "field",
-        "protocol": [
-          "bittorrent"
-        ],
-        "outboundTag": "blocked"
-      }
-    ]
-  }
-}
-EOF
-
-cat <<EOF> /usr/local/etc/xray/trojangrpc.json
-{
-  "log": {
-    "loglevel": "info"
-  },
-  "inbounds": [
-    {
-      "tag": "trojangrpc",
-      "port": 2007,
-      "protocol": "trojan",
-      "settings": {
-        "clients": [
-          {
-            "password": "admin",
-            "email": "admin"
-#trojangrpc            
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "grpc",
-        "security": "none",
-        "grpcSettings": {
-          "serviceName": "trojangrpc"
-        }
-      },
-      "sniffing": {
-        "enabled": true,
-        "destOverride": [
-          "http",
-          "tls"
-        ]
-      }
-    },
-    {
-      "listen": "127.0.0.1",
-      "port": 10087,
-      "protocol": "dokodemo-door",
-      "settings": {
-        "address": "127.0.0.1"
-      },
-      "tag": "api"
-    }
-  ],
-  "outbounds": [
-    {
-      "protocol": "freedom",
-      "settings": {
-        "domainStrategy": "UseIPv4"
-      },
-      "tag": "IPv4-out"
-    },
-    },
-    {
-      "protocol": "freedom",
-      "settings": {
-        "domainStrategy": "UseIPv6"
-      },
-      "tag": "IPv6-out"
-    },
-    {
-      "protocol": "blackhole",
-      "settings": {
-        "response": {
-          "type": "http"
-        }
-      },
-      "tag": "block"
-    }
-  ],
-  "routing": {
-    "domainStrategy": "IPIfNonMatch",
-    "rules": [
-      {
-        "type": "field",
-        "ip": [
-          "1.1.1.1",
-          "1.0.0.1"
-        ],
-        "outboundTag": "IPv4-out"
-      },
-      {
-        "type": "field",
-        "domain": [
-          "geosite:rule-ads",
-          "geosite:rule-malicious"
-        ],
-        "outboundTag": "block"
-      },
-      {
-        "type": "field",
-        "ip": [
-          "geoip:cn"
-        ],
-        "outboundTag": "block"
-      },
-      {
-        "inboundTag": [
-          "api"
-        ],
-        "outboundTag": "api",
-        "type": "field"
-      }
-    ]
-  }
-}
 EOF
 
 cat <<EOF> /usr/local/etc/xray/vmesswsnontls.json
@@ -861,7 +209,7 @@ EOF
 mkdir -p '/etc/systemd/system/xray.service.d'
 mkdir -p '/etc/systemd/system/xray@.service.d/'
 
-cat > /etc/systemd/system/xray.service <<EOF
+cat > /etc/systemd/system/xray.service << EOF
 [Unit]
 Description=Xray Service
 Documentation=https://github.com/xtls
@@ -882,7 +230,7 @@ LimitNOFILE=1000000
 WantedBy=multi-user.target
 EOF
 
-cat > /etc/systemd/system/xray@.service <<EOF
+cat > /etc/systemd/system/xray@.service << EOF
 [Unit]
 Description=Xray Service
 Documentation=https://github.com/xtls
@@ -902,218 +250,375 @@ LimitNOFILE=1000000
 [Install]
 WantedBy=multi-user.target
 EOF
-
-
-cat > /etc/systemd/system/xray.service.d/10-donot_touch_single_conf.conf << EOF
-# In case you have a good reason to do so, duplicate this file in the same directory and make your customizes there.
+chmod 644 /etc/systemd/system/xray.service /etc/systemd/system/xray@.service
+  if [[ -n "/usr/local/etc/xray" ]]; then
+    "rm" '/etc/systemd/system/xray.service.d/10-donot_touch_single_conf.conf' \
+      '/etc/systemd/system/xray@.service.d/10-donot_touch_single_conf.conf'
+    echo "# In case you have a good reason to do so, duplicate this file in the same directory and make your customizes there.
 # Or all changes you made will be lost!  # Refer: https://www.freedesktop.org/software/systemd/man/systemd.unit.html
 [Service]
 ExecStart=
-ExecStart=/usr/local/bin/xray run -config /usr/local/etc/xray/config.json
-EOF
-
-cat > /etc/systemd/system/xray@.service.d/10-donot_touch_single_conf.conf << EOF
-# In case you have a good reason to do so, duplicate this file in the same directory and make your customizes there.
+ExecStart=/usr/local/bin/xray run -confdir /usr/local/etc/xray" |
+      tee '/etc/systemd/system/xray.service.d/10-donot_touch_multi_conf.conf' > \
+        '/etc/systemd/system/xray@.service.d/10-donot_touch_multi_conf.conf'
+  else
+    "rm" '/etc/systemd/system/xray.service.d/10-donot_touch_multi_conf.conf' \
+      '/etc/systemd/system/xray@.service.d/10-donot_touch_multi_conf.conf'
+    echo "# In case you have a good reason to do so, duplicate this file in the same directory and make your customizes there.
 # Or all changes you made will be lost!  # Refer: https://www.freedesktop.org/software/systemd/man/systemd.unit.html
 [Service]
 ExecStart=
-ExecStart=/usr/local/bin/xray run -config /usr/local/etc/xray/%i.json
-EOF
+ExecStart=/usr/local/bin/xray run -config /usr/local/etc/xray/config.json" > \
+      '/etc/systemd/system/xray.service.d/10-donot_touch_single_conf.conf'
+    echo "# In case you have a good reason to do so, duplicate this file in the same directory and make your customizes there.
+# Or all changes you made will be lost!  # Refer: https://www.freedesktop.org/software/systemd/man/systemd.unit.html
+[Service]
+ExecStart=
+ExecStart=/usr/local/bin/xray run -config /usr/local/etc/xray/%i.json" > \
+      '/etc/systemd/system/xray@.service.d/10-donot_touch_single_conf.conf'
+  fi
+  echo "info: Systemd service files have been installed successfully!"
+  echo "${red}warning: ${green}The following are the actual parameters for the xray service startup."
+  echo "${red}warning: ${green}Please make sure the configuration file path is correctly set.${reset}"
+  systemd_cat_config /etc/systemd/system/xray.service
+  # shellcheck disable=SC2154
+  if [[ x"${check_all_service_files:0:1}" = x'y' ]]; then
+    echo
+    echo
+    systemd_cat_config /etc/systemd/system/xray@.service
+  fi
+  systemctl daemon-reload
+}
 
-chmod +x /etc/systemd/system/xray@.service
-chmod +x /etc/systemd/system/xray@.service.d/10-donot_touch_single_conf.conf
-systemctl enable xray@.service
-systemctl restart xray.service
-systemctl daemon-reload
-systemctl restart xray
+start_xray() {
+  if [[ -f '/etc/systemd/system/xray.service' ]]; then
+    systemctl start "/etc/systemd/system/xray@.service"
+    sleep 1s
+    if systemctl -q is-active "/etc/systemd/system/xray@.service"; then
+      echo 'info: Start the Xray service.'
+    else
+      echo 'error: Failed to start Xray service.'
+      exit 1
+    fi
+  fi
+}
 
 # Set Nginx Conf
 cat > /etc/nginx/nginx.conf << EOF
 user www-data;
-worker_processes auto;
+worker_processes 1;
 pid /var/run/nginx.pid;
-include /etc/nginx/modules-enabled/*.conf;
-
 events {
     multi_accept on;
     worker_connections 1024;
 }
 http {
-
-        ##
-        # Basic Settings
-        ##
-
-        sendfile on;
-        tcp_nopush on;
-        tcp_nodelay on;
-        keepalive_timeout 65;
-        types_hash_max_size 2048;
-        # server_tokens off;
-
-        # server_names_hash_bucket_size 64;
-        # server_name_in_redirect off;
-
-        include /etc/nginx/mime.types;
-        default_type application/octet-stream;
-
-        ##
-        # SSL Settings
-        ##
-
-        ssl_protocols TLSv1 TLSv1.1 TLSv1.2 TLSv1.3; # Dropping SSLv3, ref: POO>
-        ssl_prefer_server_ciphers on;
-
-        ##
-        # Logging Settings
-        ##
-        access_log /var/log/nginx/access.log;
-        error_log /var/log/nginx/error.log;
-
-        ##
-        # Gzip Settings
-        ##
-
-        gzip on;
-
-        # gzip_vary on;
-        # gzip_proxied any;
-        # gzip_comp_level 6;
-        # gzip_buffers 16 8k;
-        # gzip_http_version 1.1;
-        # gzip_types text/plain text/css application/json application/javascrip>
-
-        ##
-        # Virtual Host Configs
-
-        include /etc/nginx/conf.d/*.conf;
-        include /etc/nginx/sites-enabled/*;
+    gzip on;
+    gzip_vary on;
+    gzip_comp_level 5;
+    gzip_types text/plain application/x-javascript text/xml text/css;
+    autoindex on;
+    sendfile on;
+    tcp_nopush on;
+    tcp_nodelay on;
+    keepalive_timeout 65;
+    types_hash_max_size 2048;
+    server_tokens off;
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+    access_log /var/log/nginx/access.log;
+    error_log /var/log/nginx/error.log;
+    client_max_body_size 32M;
+    client_header_buffer_size 8m;
+    large_client_header_buffers 8 8m;
+    fastcgi_buffer_size 8m;
+    fastcgi_buffers 8 8m;
+    fastcgi_read_timeout 600;
+    set_real_ip_from 23.235.32.0/20;
+    set_real_ip_from 43.249.72.0/22;
+    set_real_ip_from 103.244.50.0/24;
+    set_real_ip_from 103.245.222.0/23;
+    set_real_ip_from 103.245.224.0/24;
+    set_real_ip_from 104.156.80.0/20;
+    set_real_ip_from 140.248.64.0/18;
+    set_real_ip_from 140.248.128.0/17;
+    set_real_ip_from 146.75.0.0/17;
+    set_real_ip_from 151.101.0.0/16;
+    set_real_ip_from 157.52.64.0/18;
+    set_real_ip_from 167.82.0.0/17;
+    set_real_ip_from 167.82.128.0/20;
+    set_real_ip_from 167.82.160.0/20;
+    set_real_ip_from 167.82.224.0/20;
+    set_real_ip_from 172.111.64.0/18;
+    set_real_ip_from 185.31.16.0/22;
+    set_real_ip_from 199.27.72.0/21;
+    set_real_ip_from 199.232.0.0/16;
+    set_real_ip_from 2a04:4e40::/32;
+    set_real_ip_from 2a04:4e42::/32;
+    set_real_ip_from 173.245.48.0/20;
+    set_real_ip_from 103.21.244.0/22;
+    set_real_ip_from 103.22.200.0/22;
+    set_real_ip_from 103.31.4.0/22;
+    set_real_ip_from 141.101.64.0/18;
+    set_real_ip_from 108.162.192.0/18;
+    set_real_ip_from 190.93.240.0/20;
+    set_real_ip_from 188.114.96.0/20;
+    set_real_ip_from 197.234.240.0/22;
+    set_real_ip_from 198.41.128.0/17;
+    set_real_ip_from 162.158.0.0/15;
+    set_real_ip_from 104.16.0.0/13;
+    set_real_ip_from 104.24.0.0/14;
+    set_real_ip_from 172.64.0.0/13;
+    set_real_ip_from 131.0.72.0/22;
+    set_real_ip_from 2400:cb00::/32;
+    set_real_ip_from 2606:4700::/32;
+    set_real_ip_from 2803:f800::/32;
+    set_real_ip_from 2405:b500::/32;
+    set_real_ip_from 2405:8100::/32;
+    set_real_ip_from 2a06:98c0::/29;
+    set_real_ip_from 2c0f:f248::/32;
+    set_real_ip_from 120.52.22.96/27;
+    set_real_ip_from 205.251.249.0/24;
+    set_real_ip_from 180.163.57.128/26;
+    set_real_ip_from 204.246.168.0/22;
+    set_real_ip_from 18.160.0.0/15;
+    set_real_ip_from 205.251.252.0/23;
+    set_real_ip_from 54.192.0.0/16;
+    set_real_ip_from 204.246.173.0/24;
+    set_real_ip_from 54.230.200.0/21;
+    set_real_ip_from 120.253.240.192/26;
+    set_real_ip_from 116.129.226.128/26;
+    set_real_ip_from 130.176.0.0/17;
+    set_real_ip_from 108.156.0.0/14;
+    set_real_ip_from 99.86.0.0/16;
+    set_real_ip_from 205.251.200.0/21;
+    set_real_ip_from 223.71.71.128/25;
+    set_real_ip_from 13.32.0.0/15;
+    set_real_ip_from 120.253.245.128/26;
+    set_real_ip_from 13.224.0.0/14;
+    set_real_ip_from 70.132.0.0/18;
+    set_real_ip_from 15.158.0.0/16;
+    set_real_ip_from 13.249.0.0/16;
+    set_real_ip_from 18.238.0.0/15;
+    set_real_ip_from 18.244.0.0/15;
+    set_real_ip_from 205.251.208.0/20;
+    set_real_ip_from 65.9.128.0/18;
+    set_real_ip_from 130.176.128.0/18;
+    set_real_ip_from 58.254.138.0/25;
+    set_real_ip_from 54.230.208.0/20;
+    set_real_ip_from 116.129.226.0/25;
+    set_real_ip_from 52.222.128.0/17;
+    set_real_ip_from 18.164.0.0/15;
+    set_real_ip_from 64.252.128.0/18;
+    set_real_ip_from 205.251.254.0/24;
+    set_real_ip_from 54.230.224.0/19;
+    set_real_ip_from 71.152.0.0/17;
+    set_real_ip_from 216.137.32.0/19;
+    set_real_ip_from 204.246.172.0/24;
+    set_real_ip_from 18.172.0.0/15;
+    set_real_ip_from 120.52.39.128/27;
+    set_real_ip_from 118.193.97.64/26;
+    set_real_ip_from 223.71.71.96/27;
+    set_real_ip_from 18.154.0.0/15;
+    set_real_ip_from 54.240.128.0/18;
+    set_real_ip_from 205.251.250.0/23;
+    set_real_ip_from 180.163.57.0/25;
+    set_real_ip_from 52.46.0.0/18;
+    set_real_ip_from 223.71.11.0/27;
+    set_real_ip_from 52.82.128.0/19;
+    set_real_ip_from 54.230.0.0/17;
+    set_real_ip_from 54.230.128.0/18;
+    set_real_ip_from 54.239.128.0/18;
+    set_real_ip_from 130.176.224.0/20;
+    set_real_ip_from 36.103.232.128/26;
+    set_real_ip_from 52.84.0.0/15;
+    set_real_ip_from 143.204.0.0/16;
+    set_real_ip_from 144.220.0.0/16;
+    set_real_ip_from 120.52.153.192/26;
+    set_real_ip_from 119.147.182.0/25;
+    set_real_ip_from 120.232.236.0/25;
+    set_real_ip_from 54.182.0.0/16;
+    set_real_ip_from 58.254.138.128/26;
+    set_real_ip_from 120.253.245.192/27;
+    set_real_ip_from 54.239.192.0/19;
+    set_real_ip_from 18.68.0.0/16;
+    set_real_ip_from 18.64.0.0/14;
+    set_real_ip_from 120.52.12.64/26;
+    set_real_ip_from 99.84.0.0/16;
+    set_real_ip_from 130.176.192.0/19;
+    set_real_ip_from 52.124.128.0/17;
+    set_real_ip_from 204.246.164.0/22;
+    set_real_ip_from 13.35.0.0/16;
+    set_real_ip_from 204.246.174.0/23;
+    set_real_ip_from 36.103.232.0/25;
+    set_real_ip_from 119.147.182.128/26;
+    set_real_ip_from 118.193.97.128/25;
+    set_real_ip_from 120.232.236.128/26;
+    set_real_ip_from 204.246.176.0/20;
+    set_real_ip_from 65.8.0.0/16;
+    set_real_ip_from 65.9.0.0/17;
+    set_real_ip_from 108.138.0.0/15;
+    set_real_ip_from 120.253.241.160/27;
+    set_real_ip_from 64.252.64.0/18;
+    set_real_ip_from 13.113.196.64/26;
+    set_real_ip_from 13.113.203.0/24;
+    set_real_ip_from 52.199.127.192/26;
+    set_real_ip_from 13.124.199.0/24;
+    set_real_ip_from 3.35.130.128/25;
+    set_real_ip_from 52.78.247.128/26;
+    set_real_ip_from 13.233.177.192/26;
+    set_real_ip_from 15.207.13.128/25;
+    set_real_ip_from 15.207.213.128/25;
+    set_real_ip_from 52.66.194.128/26;
+    set_real_ip_from 13.228.69.0/24;
+    set_real_ip_from 52.220.191.0/26;
+    set_real_ip_from 13.210.67.128/26;
+    set_real_ip_from 13.54.63.128/26;
+    set_real_ip_from 99.79.169.0/24;
+    set_real_ip_from 18.192.142.0/23;
+    set_real_ip_from 35.158.136.0/24;
+    set_real_ip_from 52.57.254.0/24;
+    set_real_ip_from 13.48.32.0/24;
+    set_real_ip_from 18.200.212.0/23;
+    set_real_ip_from 52.212.248.0/26;
+    set_real_ip_from 3.10.17.128/25;
+    set_real_ip_from 3.11.53.0/24;
+    set_real_ip_from 52.56.127.0/25;
+    set_real_ip_from 15.188.184.0/24;
+    set_real_ip_from 52.47.139.0/24;
+    set_real_ip_from 18.229.220.192/26;
+    set_real_ip_from 54.233.255.128/26;
+    set_real_ip_from 3.231.2.0/25;
+    set_real_ip_from 3.234.232.224/27;
+    set_real_ip_from 3.236.169.192/26;
+    set_real_ip_from 3.236.48.0/23;
+    set_real_ip_from 34.195.252.0/24;
+    set_real_ip_from 34.226.14.0/24;
+    set_real_ip_from 13.59.250.0/26;
+    set_real_ip_from 18.216.170.128/25;
+    set_real_ip_from 3.128.93.0/24;
+    set_real_ip_from 3.134.215.0/24;
+    set_real_ip_from 52.15.127.128/26;
+    set_real_ip_from 3.101.158.0/23;
+    set_real_ip_from 52.52.191.128/26;
+    set_real_ip_from 34.216.51.0/25;
+    set_real_ip_from 34.223.12.224/27;
+    set_real_ip_from 34.223.80.192/26;
+    set_real_ip_from 35.162.63.192/26;
+    set_real_ip_from 35.167.191.128/26;
+    set_real_ip_from 44.227.178.0/24;
+    set_real_ip_from 44.234.108.128/25;
+    set_real_ip_from 44.234.90.252/30;
+    set_real_ip_from 204.93.240.0/24;
+    set_real_ip_from 204.93.177.0/24;
+    set_real_ip_from 199.27.128.0/21;
+    set_real_ip_from 173.245.48.0/20;
+    set_real_ip_from 103.21.244.0/22;
+    set_real_ip_from 103.22.200.0/22;
+    set_real_ip_from 103.31.4.0/22;
+    set_real_ip_from 141.101.64.0/18;
+    set_real_ip_from 108.162.192.0/18;
+    set_real_ip_from 190.93.240.0/20;
+    set_real_ip_from 188.114.96.0/20;
+    set_real_ip_from 197.234.240.0/22;
+    set_real_ip_from 198.41.128.0/17;
+    real_ip_header CF-Connecting-IP;
+    include /etc/nginx/conf.d/*.conf;
 }
-
-
-#mail {
-#       # See sample authentication script at:
-#       # http://wiki.nginx.org/ImapAuthenticateWithApachePhpScript
-#
-#       # auth_http localhost/auth.php;
-#       # pop3_capabilities "TOP" "USER";
-#       # imap_capabilities "IMAP4rev1" "UIDPLUS";
-#
-#       server {
-#               listen     localhost:110;
-#               protocol   pop3;
-#               proxy      on;
-#       }
-#
-#       server {
-#               listen     localhost:143;
-#               protocol   imap;
-#               proxy      on;
-#       }
-#}
 EOF
 
 # Set Xray Nginx Conf
 cat > /etc/nginx/conf.d/xray.conf << EOF
     server {
-        listen 81;
-        listen [::]:81;
-        return 301 https://$host$request_uri;
-    }
-
+             listen 81;
+             listen [::]:81;
+             root /var/www/html;
+        }
     server {
-        listen 443 ssl http2;
-        listen [::]:443 ssl http2;
-        server_name 127.0.0.1 localhost;
-
-        ssl_certificate /usr/local/etc/xray/xray.crt;
-        ssl_certificate_key /usr/local/etc/xray/xray.key;
-        ssl_ciphers EECDH+CHACHA20:EECDH+CHACHA20-draft:EECDH+ECDSA+AES128:EECDH+aRSA+AES128:RSA+AES128:EECDH+ECDSA+AES256:EECDH+aRSA+AES256:RSA+AES256:EECDH+ECDSA+3DES:EECDH+aRSA+3DES:RSA+3DES:!MD5;
-        ssl_protocols TLSv1.1 TLSv1.2 TLSv1.3;
+             listen 443 ssl http2 reuseport;
+             listen [::]:443 http2 reuseport;	
+             server_name *.$domain;
+             ssl_certificate /etc/xray/xray.crt;
+             ssl_certificate_key /etc/xray/xray.key;
+             ssl_ciphers EECDH+CHACHA20:EECDH+CHACHA20-draft:EECDH+ECDSA+AES128:EECDH+aRSA+AES128:RSA+AES128:EECDH+ECDSA+AES256:EECDH+aRSA+AES256:RSA+AES256:EECDH+ECDSA+3DES:EECDH+aRSA+3DES:RSA+3DES:!MD5;
+             ssl_protocols TLSv1.1 TLSv1.2 TLSv1.3;
         }
 EOF
 
-        location = /vless-ws {
-            proxy_redirect off;
-            proxy_pass http://127.0.0.1:2001;
-            proxy_http_version 1.1;
-            proxy_set_header Upgrade $http_upgrade;
-            proxy_set_header Connection "upgrade";
-            proxy_set_header Host $http_host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        }
+sed -i '$ ilocation = /vless-ws' /etc/nginx/conf.d/xray.conf
+sed -i '$ i{' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_redirect off;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_pass http://127.0.0.1:2001;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_http_version 1.1;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_set_header X-Real-IP \$remote_addr;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_set_header Upgrade \$http_upgrade;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_set_header Connection "upgrade";' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_set_header Host \$http_host;' /etc/nginx/conf.d/xray.conf
+sed -i '$ i}' /etc/nginx/conf.d/xray.conf
 
-        location = /vmess-ws {
-            proxy_redirect off;
-            proxy_pass http://127.0.0.1:2002;
-            proxy_http_version 1.1;
-            proxy_set_header Upgrade $http_upgrade;
-            proxy_set_header Connection "upgrade";
-            proxy_set_header Host $http_host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        }
+sed -i '$ ilocation = /vmess-ws' /etc/nginx/conf.d/xray.conf
+sed -i '$ i{' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_redirect off;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_pass http://127.0.0.1:2002;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_http_version 1.1;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_set_header X-Real-IP \$remote_addr;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_set_header Upgrade \$http_upgrade;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_set_header Connection "upgrade";' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_set_header Host \$http_host;' /etc/nginx/conf.d/xray.conf
+sed -i '$ i}' /etc/nginx/conf.d/xray.conf
 
-        location = /trojan-ws {
-            proxy_redirect off;
-            proxy_pass http://127.0.0.1:2003;
-            proxy_http_version 1.1;
-            proxy_set_header Upgrade $http_upgrade;
-            proxy_set_header Connection "upgrade";
-            proxy_set_header Host $http_host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        }
+sed -i '$ ilocation = /trojan-ws' /etc/nginx/conf.d/xray.conf
+sed -i '$ i{' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_redirect off;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_pass http://127.0.0.1:2003;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_http_version 1.1;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_set_header X-Real-IP \$remote_addr;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_set_header Upgrade \$http_upgrade;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_set_header Connection "upgrade";' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_set_header Host \$http_host;' /etc/nginx/conf.d/xray.conf
+sed -i '$ i}' /etc/nginx/conf.d/xray.conf
 
-        location /vlessgrpc {
-            if ($request_method != "POST") {
-                return 404;
-            }
-            client_body_buffer_size 1m;
-            client_body_timeout 1h;
-            client_max_body_size 0;
-            grpc_read_timeout 1h;
-            grpc_send_timeout 1h;
-            grpc_set_header X-Real-IP $remote_addr;
-            grpc_pass grpc://127.0.0.1:2005;
-        }
+sed -i '$ ilocation = /socks-ws' /etc/nginx/conf.d/xray.conf
+sed -i '$ i{' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_redirect off;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_pass http://127.0.0.1:2004;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_http_version 1.1;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_set_header X-Real-IP \$remote_addr;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_set_header Upgrade \$http_upgrade;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_set_header Connection "upgrade";' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_set_header Host \$http_host;' /etc/nginx/conf.d/xray.conf
+sed -i '$ i}' /etc/nginx/conf.d/xray.conf
 
-        location /vmessgrpc {
-            if ($request_method != "POST") {
-                return 404;
-            }
-            client_body_buffer_size 1m;
-            client_body_timeout 1h;
-            client_max_body_size 0;
-            grpc_read_timeout 1h;
-            grpc_send_timeout 1h;
-            grpc_set_header X-Real-IP $remote_addr;
-            grpc_pass grpc://127.0.0.1:2006;
-        }
-        location /trojangrpc {
-            if ($request_method != "POST") {
-                return 404;
-            }
-            client_body_buffer_size 1m;
-            client_body_timeout 1h;
-            client_max_body_size 0;
-            grpc_read_timeout 1h;
-            grpc_send_timeout 1h;
-            grpc_set_header X-Real-IP $remote_addr;
-            grpc_pass grpc://127.0.0.1:2007;
-        }
+sed -i '$ ilocation ^~ /vless-grpc' /etc/nginx/conf.d/xray.conf
+sed -i '$ i{' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_redirect off;' /etc/nginx/conf.d/xray.conf
+sed -i '$ igrpc_set_header X-Real-IP \$remote_addr;' /etc/nginx/conf.d/xray.conf
+sed -i '$ igrpc_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;' /etc/nginx/conf.d/xray.conf
+sed -i '$ igrpc_set_header Host \$http_host;' /etc/nginx/conf.d/xray.conf
+sed -i '$ igrpc_pass grpc://127.0.0.1:2005;' /etc/nginx/conf.d/xray.conf
+sed -i '$ i}' /etc/nginx/conf.d/xray.conf
 
-        add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
-        location / {
-            if ($host ~* "\d+\.\d+\.\d+\.\d+") {
-                return 400;
-            }
-            root /var/www/html;
-            index index.html index.htm;
-        }
-}
-EOF
+sed -i '$ ilocation ^~ /vmess-grpc' /etc/nginx/conf.d/xray.conf
+sed -i '$ i{' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_redirect off;' /etc/nginx/conf.d/xray.conf
+sed -i '$ igrpc_set_header X-Real-IP \$remote_addr;' /etc/nginx/conf.d/xray.conf
+sed -i '$ igrpc_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;' /etc/nginx/conf.d/xray.conf
+sed -i '$ igrpc_set_header Host \$http_host;' /etc/nginx/conf.d/xray.conf
+sed -i '$ igrpc_pass grpc://127.0.0.1:2006;' /etc/nginx/conf.d/xray.conf
+sed -i '$ i}' /etc/nginx/conf.d/xray.conf
+
+sed -i '$ ilocation ^~ /trojan-grpc' /etc/nginx/conf.d/xray.conf
+sed -i '$ i{' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_redirect off;' /etc/nginx/conf.d/xray.conf
+sed -i '$ igrpc_set_header X-Real-IP \$remote_addr;' /etc/nginx/conf.d/xray.conf
+sed -i '$ igrpc_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;' /etc/nginx/conf.d/xray.conf
+sed -i '$ igrpc_set_header Host \$http_host;' /etc/nginx/conf.d/xray.conf
+sed -i '$ igrpc_pass grpc://127.0.0.1:2007;' /etc/nginx/conf.d/xray.conf
+sed -i '$ i}' /etc/nginx/conf.d/xray.conf
 
 service nginx restart
 service xray restart
