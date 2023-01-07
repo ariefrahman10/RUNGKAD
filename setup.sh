@@ -904,7 +904,7 @@ WantedBy=multi-user.target
 EOF
 
 
-cat > /etc/systemd/system/xray.service.d/10-donot_touch_multi_conf.conf << EOF
+cat > /etc/systemd/system/xray.service.d/10-donot_touch_single_conf.conf << EOF
 # In case you have a good reason to do so, duplicate this file in the same directory and make your customizes there.
 # Or all changes you made will be lost!  # Refer: https://www.freedesktop.org/software/systemd/man/systemd.unit.html
 [Service]
@@ -912,7 +912,7 @@ ExecStart=
 ExecStart=/usr/local/bin/xray run -config /usr/local/etc/xray/config.json
 EOF
 
-cat > /etc/systemd/system/xray@.service.d/10-donot_touch_multi_conf.conf << EOF
+cat > /etc/systemd/system/xray@.service.d/10-donot_touch_single_conf.conf << EOF
 # In case you have a good reason to do so, duplicate this file in the same directory and make your customizes there.
 # Or all changes you made will be lost!  # Refer: https://www.freedesktop.org/software/systemd/man/systemd.unit.html
 [Service]
@@ -921,10 +921,9 @@ ExecStart=/usr/local/bin/xray run -config /usr/local/etc/xray/%i.json
 EOF
 
 chmod +x /etc/systemd/system/xray@.service
-chmod +x /etc/systemd/system/xray@.service.d/10-donot_touch_multi_conf.conf
+chmod +x /etc/systemd/system/xray@.service.d/10-donot_touch_single_conf.conf
 systemctl enable xray@.service
-systemctl start xray@.service
-systemctl enable xray.service
+systemctl restart xray.service
 systemctl daemon-reload
 systemctl restart xray
 
