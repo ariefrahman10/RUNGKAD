@@ -95,116 +95,6 @@ uuid=$(cat /proc/sys/kernel/random/uuid)
 cat << EOF > /usr/local/etc/xray/config.json
 {}
 EOF
-
-cat <<EOF> /usr/local/etc/xray/vmesswsnontls.json
-{
-  "log": {
-    "loglevel": "info",
-  },
-  "inbounds": [
-    {
-      "tag": "vmesswsnontls",
-      "port": 80,
-      "protocol": "vmess",
-      "settings": {
-        "clients": [
-          {
-            "email": "admin",
-            "id": "${uuid}",
-            "level": 0,
-            "alterId": 0
-#vmesswsnontls            
-          }
-        ],
-        "decryption": "none"
-      },
-      "streamSettings": {
-        "network": "ws",
-        "security": "none",
-        "wsSettings": {
-          "path": "/worryfree"
-        }
-      },
-      "sniffing": {
-        "enabled": true,
-        "destOverride": [
-          "http",
-          "tls"
-        ]
-      }
-    },
-    {
-      "listen": "127.0.0.1",
-      "port": 10081,
-      "protocol": "dokodemo-door",
-      "settings": {
-        "address": "127.0.0.1"
-      },
-      "tag": "api"
-    }
-  ],
-  "outbounds": [
-    {
-      "tag": "direct",
-      "protocol": "freedom",
-      "settings": {}
-    },
-    {
-      "protocol": "socks",
-      "settings": {
-        "servers": [
-          {
-            "address": "127.0.0.1",
-            "port": 40000
-          }
-        ]
-      },
-      "tag": "socks5-warp"
-    }
-  ],
-  "routing": {
-    "domainStrategy": "IPOnDemand",
-    "rules": [
-      {
-        "inboundTag": [
-          "api"
-        ],
-        "outboundTag": "api",
-        "type": "field"
-      },
-      {
-        "type": "field",
-        "ip": [
-          "0.0.0.0/8",
-          "10.0.0.0/8",
-          "100.64.0.0/10",
-          "127.0.0.0/8",
-          "169.254.0.0/16",
-          "172.16.0.0/12",
-          "192.0.0.0/24",
-          "192.0.2.0/24",
-          "192.168.0.0/16",
-          "198.18.0.0/15",
-          "198.51.100.0/24",
-          "203.0.113.0/24",
-          "::1/128",
-          "fc00::/7",
-          "fe80::/10"
-        ],
-        "outboundTag": "blocked"
-      },
-      {
-        "type": "field",
-        "protocol": [
-          "bittorrent"
-        ],
-        "outboundTag": "blocked"
-      }
-    ]
-  }
-}
-EOF
-
 #install_startup_service_file
 mkdir -p '/etc/systemd/system/xray.service.d'
 mkdir -p '/etc/systemd/system/xray@.service.d/'
@@ -250,58 +140,28 @@ LimitNOFILE=1000000
 [Install]
 WantedBy=multi-user.target
 EOF
-chmod 644 /etc/systemd/system/xray.service /etc/systemd/system/xray@.service
-  if [[ -n "/usr/local/etc/xray" ]]; then
-    "rm" '/etc/systemd/system/xray.service.d/10-donot_touch_single_conf.conf' \
-      '/etc/systemd/system/xray@.service.d/10-donot_touch_single_conf.conf'
-    echo "# In case you have a good reason to do so, duplicate this file in the same directory and make your customizes there.
-# Or all changes you made will be lost!  # Refer: https://www.freedesktop.org/software/systemd/man/systemd.unit.html
-[Service]
-ExecStart=
-ExecStart=/usr/local/bin/xray run -confdir /usr/local/etc/xray" |
-      tee '/etc/systemd/system/xray.service.d/10-donot_touch_multi_conf.conf' > \
-        '/etc/systemd/system/xray@.service.d/10-donot_touch_multi_conf.conf'
-  else
-    "rm" '/etc/systemd/system/xray.service.d/10-donot_touch_multi_conf.conf' \
-      '/etc/systemd/system/xray@.service.d/10-donot_touch_multi_conf.conf'
-    echo "# In case you have a good reason to do so, duplicate this file in the same directory and make your customizes there.
-# Or all changes you made will be lost!  # Refer: https://www.freedesktop.org/software/systemd/man/systemd.unit.html
-[Service]
-ExecStart=
-ExecStart=/usr/local/bin/xray run -config /usr/local/etc/xray/config.json" > \
-      '/etc/systemd/system/xray.service.d/10-donot_touch_single_conf.conf'
-    echo "# In case you have a good reason to do so, duplicate this file in the same directory and make your customizes there.
-# Or all changes you made will be lost!  # Refer: https://www.freedesktop.org/software/systemd/man/systemd.unit.html
-[Service]
-ExecStart=
-ExecStart=/usr/local/bin/xray run -config /usr/local/etc/xray/%i.json" > \
-      '/etc/systemd/system/xray@.service.d/10-donot_touch_single_conf.conf'
-  fi
-  echo "info: Systemd service files have been installed successfully!"
-  echo "${red}warning: ${green}The following are the actual parameters for the xray service startup."
-  echo "${red}warning: ${green}Please make sure the configuration file path is correctly set.${reset}"
-  systemd_cat_config /etc/systemd/system/xray.service
-  # shellcheck disable=SC2154
-  if [[ x"${check_all_service_files:0:1}" = x'y' ]]; then
-    echo
-    echo
-    systemd_cat_config /etc/systemd/system/xray@.service
-  fi
-  systemctl daemon-reload
-}
 
-start_xray() {
-  if [[ -f '/etc/systemd/system/xray.service' ]]; then
-    systemctl start "/etc/systemd/system/xray@.service"
-    sleep 1s
-    if systemctl -q is-active "/etc/systemd/system/xray@.service"; then
-      echo 'info: Start the Xray service.'
-    else
-      echo 'error: Failed to start Xray service.'
-      exit 1
-    fi
-  fi
-}
+chmod 644 /etc/systemd/system/xray.service 
+chmod 644 /etc/systemd/system/xray@.service
+
+cat > /etc/systemd/system/xray.service.d/10-donot_touch_single_conf.conf << EOF
+# In case you have a good reason to do so, duplicate this file in the same directory and make your customizes there.
+# Or all changes you made will be lost!  # Refer: https://www.freedesktop.org/software/systemd/man/systemd.unit.html
+[Service]
+ExecStart=
+ExecStart=/usr/local/bin/xray run -confdir /usr/local/etc/xray/config.json
+EOF
+
+cat > /etc/systemd/system/xray@.service.d/10-donot_touch_single_conf.conf << EOF
+# In case you have a good reason to do so, duplicate this file in the same directory and make your customizes there.
+# Or all changes you made will be lost!  # Refer: https://www.freedesktop.org/software/systemd/man/systemd.unit.html
+[Service]
+ExecStart=
+ExecStart=/usr/local/bin/xray run -confdir /usr/local/etc/xray/%i.json
+EOF
+
+chmod 644 /etc/systemd/system/xray.service.d/10-donot_touch_single_conf.conf 
+chmod 644 /etc/systemd/system/xray@.service.d/10-donot_touch_single_conf.conf 
 
 # Set Nginx Conf
 cat > /etc/nginx/nginx.conf << EOF
@@ -573,18 +433,6 @@ sed -i '$ ilocation = /trojan-ws' /etc/nginx/conf.d/xray.conf
 sed -i '$ i{' /etc/nginx/conf.d/xray.conf
 sed -i '$ iproxy_redirect off;' /etc/nginx/conf.d/xray.conf
 sed -i '$ iproxy_pass http://127.0.0.1:2003;' /etc/nginx/conf.d/xray.conf
-sed -i '$ iproxy_http_version 1.1;' /etc/nginx/conf.d/xray.conf
-sed -i '$ iproxy_set_header X-Real-IP \$remote_addr;' /etc/nginx/conf.d/xray.conf
-sed -i '$ iproxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;' /etc/nginx/conf.d/xray.conf
-sed -i '$ iproxy_set_header Upgrade \$http_upgrade;' /etc/nginx/conf.d/xray.conf
-sed -i '$ iproxy_set_header Connection "upgrade";' /etc/nginx/conf.d/xray.conf
-sed -i '$ iproxy_set_header Host \$http_host;' /etc/nginx/conf.d/xray.conf
-sed -i '$ i}' /etc/nginx/conf.d/xray.conf
-
-sed -i '$ ilocation = /socks-ws' /etc/nginx/conf.d/xray.conf
-sed -i '$ i{' /etc/nginx/conf.d/xray.conf
-sed -i '$ iproxy_redirect off;' /etc/nginx/conf.d/xray.conf
-sed -i '$ iproxy_pass http://127.0.0.1:2004;' /etc/nginx/conf.d/xray.conf
 sed -i '$ iproxy_http_version 1.1;' /etc/nginx/conf.d/xray.conf
 sed -i '$ iproxy_set_header X-Real-IP \$remote_addr;' /etc/nginx/conf.d/xray.conf
 sed -i '$ iproxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;' /etc/nginx/conf.d/xray.conf
