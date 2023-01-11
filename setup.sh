@@ -64,7 +64,7 @@ serverpsk=$(openssl rand -base64 16)
 userpsk=$(openssl rand -base64 16)
 echo "$serverpsk" > /usr/local/etc/xray/serverpsk
 # xray config
-cat << EOF > /usr/local/etc/xray/config.json
+cat > /usr/local/etc/xray/config.json << END
 {
   "log": {
     "loglevel": "info"
@@ -508,7 +508,7 @@ cat << EOF > /usr/local/etc/xray/config.json
     }
   ]
 }
-EOF
+END
 
 # Set Nginx Conf
 cat > /etc/nginx/nginx.conf << EOF
