@@ -1051,7 +1051,9 @@ wget -O menu "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/
 wget -O m-vmess "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/m-vmess.sh"
 wget -O m-vless "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/m-vless.sh"
 wget -O m-trojan "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/m-trojan.sh"
-wget -O m-warp "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/m-warp.sh"
+wget -O m-ss "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/m-ss.sh"
+wget -O m-socks "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/m-socks.sh"
+wget -O all-xray "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/all-xray.sh"
 wget -O xraymod "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/xraymod.sh"
 wget -O xrayofficial "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/xrayofficial.sh"
 wget -O kernel-bbr "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/kernel-bbr.sh"
@@ -1062,7 +1064,9 @@ chmod +x menu
 chmod +x m-vmess
 chmod +x m-vless
 chmod +x m-trojan
-chmod +x m-warp
+chmod +x m-ss
+chmod +x m-socks
+chmod +x all-xray
 chmod +x xraymod
 chmod +x xrayofficial
 chmod +x kernel-bbr
@@ -1073,33 +1077,61 @@ chmod +x ganti-domain
 # Vmess
 wget -O add-vmess "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/add-vmess.sh"
 wget -O del-vmess "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/del-vmess.sh"
+wget -O extend-vmess "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/extend-vmess.sh"
 chmod +x add-vmess
 chmod +x del-vmess
+chmod +x extend-vmess
 
 # Vless
 wget -O add-vless "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/add-vless.sh"
 wget -O del-vless "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/del-vless.sh"
+wget -O extend-vless "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/extend-vless.sh"
 chmod +x add-vless
 chmod +x del-vless
+chmod +x extend-vless
 
 # Trojan
 wget -O add-trojan "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/add-trojan.sh"
 wget -O del-trojan "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/del-trojan.sh"
+wget -O extend-trojan "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/extend-trojan.sh"
 chmod +x add-trojan
 chmod +x del-trojan
+chmod +x extend-trojan
 
+# Shadowsocks 2022
+wget -O add-ss "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/add-ss.sh"
+wget -O del-ss "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/del-ss.sh"
+wget -O extend-ss "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/extend-ss.sh"
+chmod +x add-ss
+chmod +x del-ss
+chmod +x extend-ss
+
+# Socks5
+wget -O add-socks "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/add-socks.sh"
+wget -O del-socks "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/del-socks.sh"
+wget -O extend-socks "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/extend-socks.sh"
+chmod +x add-socks
+chmod +x del-socks
+chmod +x extend-socks
+
+# All
+wget -O add-all "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/add-all.sh"
+wget -O del-all "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/del-all.sh"
+wget -O extend-all "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/extend-all.sh"
+chmod +x add-all
+chmod +x del-all
+chmod +x extend-all
+cd
 
 clear
 echo "==========================================================" | tee -a log-install.log
 echo "" | tee -a log-install.log
 echo "   >>> Service & Port" | tee -a log-install.log
-echo "   - Vmess Websocket             : 443" | tee -a log-install.log
-echo "   - Vmess Websocket non TLS     : 80 " | tee -a log-install.log
-echo "   - Vless Websocket             : 443" | tee -a log-install.log
-echo "   - Trojan Websocket            : 443" | tee -a log-install.log
-echo "   - Vmess gRPC                  : 443" | tee -a log-install.log
-echo "   - Vless gRPC                  : 443" | tee -a log-install.log
-echo "   - Trojan gRPC                 : 443" | tee -a log-install.log
+echo "   - Vmess WS/GRPC/HTTP              : 443, 80" | tee -a log-install.log
+echo "   - Vless WS/GRPC/HTTP              : 443, 80" | tee -a log-install.log
+echo "   - Trojan WS/GRPC/HTTP             : 443, 80" | tee -a log-install.log
+echo "   - Shadowsocks 2022 WS/GRPC/HTTP   : 443, 80" | tee -a log-install.log
+echo "   - Socks5 WS/GRPC/HTTP             : 443, 80" | tee -a log-install.log
 echo "" | tee -a log-install.log
 echo "==========================================================" | tee -a log-install.log
 echo ""
