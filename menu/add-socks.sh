@@ -65,13 +65,13 @@ clear
 echo -e "=========================================" | tee -a log-create-user.log
 echo -e "              Socks5 Account            " | tee -a log-create-user.log
 echo -e "=========================================" | tee -a log-create-user.log
-echo -e "Username           : ${user}" | tee -a log-create-user.log
-echo -e "Password         	: ${pass}" | tee -a log-create-user.log
-echo -e "Domain           	: ${domain}" | tee -a log-create-user.log
-echo -e "Port TLS         	: 443" | tee -a log-create-user.log
-echo -e "Port none TLS    	: 80" | tee -a log-create-user.log
-echo -e "Network          	: Websocket, gRPC" | tee -a log-create-user.log
-echo -e "Path WS TLS        : /socks-ws" | tee -a log-create-user.log
+echo -e "Username             : ${user}" | tee -a log-create-user.log
+echo -e "Password             : ${pass}" | tee -a log-create-user.log
+echo -e "Domain               : ${domain}" | tee -a log-create-user.log
+echo -e "Port TLS             : 443" | tee -a log-create-user.log
+echo -e "Port none TLS        : 80" | tee -a log-create-user.log
+echo -e "Network              : Websocket, gRPC" | tee -a log-create-user.log
+echo -e "Path WS TLS          : /socks-ws" | tee -a log-create-user.log
 echo -e "Path WS non TLS      : /socks-wsnon" | tee -a log-create-user.log
 echo -e "ServiceName TLS      : socks-grpc" | tee -a log-create-user.log
 echo -e "ServiceName HTTP     : socks-grpcnon" | tee -a log-create-user.log
