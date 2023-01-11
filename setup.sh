@@ -46,12 +46,12 @@ read -rp "Input domain kamu : " -e dns
 if [ -z $dns ]; then
 echo -e "Nothing input for domain!"
 else
-echo "$dns" > /etc/xray/domain
+echo "$dns" > /usr/local/etc/xray/domain
 fi
 
 # Install Cert
 systemctl stop nginx
-domain=$(cat /etc/xray/domain)
+domain=$(cat /usr/local/etc/xray/domain)
 curl https://get.acme.sh | sh
 source ~/.bashrc
 cd .acme.sh
