@@ -18,8 +18,8 @@ rm -rf setup.sh && apt install wget && apt install curl && wget -q https://raw.g
 
 
 ## Service 👇
-- Ubuntu 18, 20 & 22 🙋
-- Debian 9, 10 & 11 💁
+- Ubuntu 20  🙋 
+- Debian 10  💁 (recomended)
 - Register IP 🙆
 
 
