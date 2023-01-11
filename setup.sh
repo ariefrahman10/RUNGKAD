@@ -97,7 +97,449 @@ userpsk=$(openssl rand -base64 16)
 echo "$serverpsk" > /usr/local/etc/xray/serverpsk
 # xray config
 cat << EOF > /usr/local/etc/xray/config.json
-{}
+{
+  "log": {
+    "loglevel": "info"
+  },
+  "inbounds": [
+#PORT80#######################################################
+    {
+      "listen": "127.0.0.1",
+      "port": "2001",
+      "protocol": "vless",
+      "settings": {
+        "decryption":"none",
+        "clients": [
+          {
+            "id": "admin"
+#vlesswsnon
+          }
+        ]
+      },
+      "streamSettings":{
+        "network": "ws",
+        "wsSettings": {
+          "path": "/vless-wsnon"
+        }
+      }
+    },
+    {
+      "listen": "127.0.0.1",
+      "port": "2002",
+      "protocol": "vmess",
+      "settings": {
+        "clients": [
+          {
+            "id": "admin",
+            "alterId": 0
+#vmesswsnon
+          }
+        ]
+      },
+      "streamSettings":{
+        "network": "ws",
+        "wsSettings": {
+          "path": "/vmess-wsnon"
+        }
+      }
+    },
+    {
+      "listen": "127.0.0.1",
+      "port": "2003",
+      "protocol": "trojan",
+      "settings": {
+        "decryption":"none",
+        "clients": [
+          {
+            "password": "admin"
+#trojanwsnon
+          }
+        ],
+        "udp": true
+      },
+      "streamSettings":{
+        "network": "ws",
+        "wsSettings": {
+          "path": "/trojan-wsnon"
+        }
+      }
+    },
+    {
+      "listen": "127.0.0.1",
+      "port": "2004",
+      "protocol": "shadowsocks",
+      "settings": {
+        "method": "$cipher",
+        "password": "$serverpsk",
+        "clients": [
+          {
+            "password": "$userpsk"
+#sswsnon
+          }
+        ],
+        "network": "tcp,udp"
+      },
+      "streamSettings":{
+        "network": "ws",
+        "wsSettings": {
+          "path": "/ss-wsnon"
+        }
+      }
+    },
+    {
+      "listen": "127.0.0.1",
+      "port": "2005",
+      "protocol": "socks",
+      "settings": {
+        "auth": "password",
+        "accounts": [
+            {
+              "user": "private",
+              "pass": "server"
+#sockswsnon
+            }
+          ],
+        "udp": true,
+        "ip": "127.0.0.1"
+      },
+      "streamSettings":{
+        "network": "ws",
+        "wsSettings": {
+          "path": "/socks-wsnon"
+        }
+      }
+    },    
+    {
+      "listen": "127.0.0.1",
+      "port": "2006",
+      "protocol": "vless",
+      "settings": {
+        "decryption":"none",
+        "clients": [
+          {
+            "id": "admin"
+#vlessgrpcnon
+          }
+        ]
+      },
+      "streamSettings":{
+        "network": "grpc",
+        "grpcSettings": {
+          "serviceName": "vless-grpcnon"
+        }
+      }
+    },
+    {
+      "listen": "127.0.0.1",
+      "port": "2007",
+      "protocol": "vmess",
+      "settings": {
+        "clients": [
+          {
+            "id": "admin",
+            "alterId": 0
+#vmessgrpcnon
+          }
+        ]
+      },
+      "streamSettings":{
+        "network": "grpc",
+        "grpcSettings": {
+          "serviceName": "vmess-grpcnon"
+        }
+      }
+    },
+    {
+      "listen": "127.0.0.1",
+      "port": "2008",
+      "protocol": "trojan",
+      "settings": {
+        "decryption":"none",
+        "clients": [
+          {
+            "password": "admin"
+#trojangrpcnon
+          }
+        ],
+        "udp": true
+      },
+      "streamSettings":{
+        "network": "grpc",
+        "grpcSettings": {
+          "serviceName": "trojan-grpcnon"
+        }
+      }
+    },
+    {
+      "listen": "127.0.0.1",
+      "port": "2009",
+      "protocol": "shadowsocks",
+      "settings": {
+        "method": "$cipher",
+        "password": "$serverpsk",
+        "clients": [
+          {
+            "password": "$userpsk"
+#ssgrpcnon
+          }
+        ],
+        "network": "tcp,udp"
+      },
+      "streamSettings":{
+        "network": "grpc",
+        "grpcSettings": {
+          "serviceName": "ss-grpcnon"
+        }
+      }
+    },  
+    {
+      "listen": "127.0.0.1",
+      "port": "2010",
+      "protocol": "socks",
+      "settings": {
+        "auth": "password",
+        "accounts": [
+            {
+              "user": "private",
+              "pass": "server"
+#socksgrpcnon
+            }
+          ],
+        "udp": true,
+        "ip": "127.0.0.1"
+      },
+      "streamSettings":{
+        "network": "grpc",
+        "grpcSettings": {
+          "serviceName": "socks-grpcnon"
+        }
+      }
+    },    
+#PORT443#######################################################
+    {
+      "listen": "127.0.0.1",
+      "port": "3001",
+      "protocol": "vless",
+      "settings": {
+        "decryption":"none",
+        "clients": [
+          {
+            "id": "admin"
+#vlessws
+          }
+        ]
+      },
+      "streamSettings":{
+        "network": "ws",
+        "wsSettings": {
+          "path": "/vless-ws"
+        }
+      }
+    },
+    {
+      "listen": "127.0.0.1",
+      "port": "3002",
+      "protocol": "vmess",
+      "settings": {
+        "clients": [
+          {
+            "id": "admin",
+            "alterId": 0
+#vmessws
+          }
+        ]
+      },
+      "streamSettings":{
+        "network": "ws",
+        "wsSettings": {
+          "path": "/vmess-ws"
+        }
+      }
+    },
+    {
+      "listen": "127.0.0.1",
+      "port": "3003",
+      "protocol": "trojan",
+      "settings": {
+        "decryption":"none",
+        "clients": [
+          {
+            "password": "admin"
+#trojanws
+          }
+        ],
+        "udp": true
+      },
+      "streamSettings":{
+        "network": "ws",
+        "wsSettings": {
+          "path": "/trojan-ws"
+        }
+      }
+    },
+    {
+      "listen": "127.0.0.1",
+      "port": "3004",
+      "protocol": "shadowsocks",
+      "settings": {
+        "method": "$cipher",
+        "password": "$serverpsk",
+        "clients": [
+          {
+            "password": "$userpsk"
+#ssws
+          }
+        ],
+        "network": "tcp,udp"
+      },
+      "streamSettings":{
+        "network": "ws",
+        "wsSettings": {
+          "path": "/ss-ws"
+        }
+      }
+    },
+    {
+      "listen": "127.0.0.1",
+      "port": "3005",
+      "protocol": "socks",
+      "settings": {
+        "auth": "password",
+        "accounts": [
+            {
+              "user": "private",
+              "pass": "server"
+#socksws
+            }
+          ],
+        "udp": true,
+        "ip": "127.0.0.1"
+      },
+      "streamSettings":{
+        "network": "ws",
+        "wsSettings": {
+          "path": "/socks-ws"
+        }
+      }
+    }, 
+    {
+      "listen": "127.0.0.1",
+      "port": "3006",
+      "protocol": "vless",
+      "settings": {
+        "decryption":"none",
+        "clients": [
+          {
+            "id": "admin"
+#vlessgrpc
+          }
+        ]
+      },
+      "streamSettings":{
+        "network": "grpc",
+        "grpcSettings": {
+          "serviceName": "vless-grpc"
+        }
+      }
+    },
+    {
+      "listen": "127.0.0.1",
+      "port": "3007",
+      "protocol": "vmess",
+      "settings": {
+        "clients": [
+          {
+            "id": "admin",
+            "alterId": 0
+#vmessgrpc
+          }
+        ]
+      },
+      "streamSettings":{
+        "network": "grpc",
+        "grpcSettings": {
+          "serviceName": "vmess-grpc"
+        }
+      }
+    },
+    {
+      "listen": "127.0.0.1",
+      "port": "3008",
+      "protocol": "trojan",
+      "settings": {
+        "decryption":"none",
+        "clients": [
+          {
+            "password": "admin"
+#trojangrpc
+          }
+        ],
+        "udp": true
+      },
+      "streamSettings":{
+        "network": "grpc",
+        "grpcSettings": {
+          "serviceName": "trojan-grpc"
+        }
+      }
+    },
+    {
+      "listen": "127.0.0.1",
+      "port": "3009",
+      "protocol": "shadowsocks",
+      "settings": {
+        "method": "$cipher",
+        "password": "$serverpsk",
+        "clients": [
+          {
+            "password": "$userpsk"
+#ssgrpc
+          }
+        ],
+        "network": "tcp,udp"
+      },
+      "streamSettings":{
+        "network": "grpc",
+        "grpcSettings": {
+          "serviceName": "ss-grpc"
+        }
+      }
+    },    
+    {
+      "listen": "127.0.0.1",
+      "port": "3010",
+      "protocol": "socks",
+      "settings": {
+        "auth": "password",
+        "accounts": [
+            {
+              "user": "private",
+              "pass": "server"
+#socksgrpc
+            }
+          ],
+        "udp": true,
+        "ip": "127.0.0.1"
+      },
+      "streamSettings":{
+        "network": "grpc",
+        "grpcSettings": {
+          "serviceName": "socks-grpc"
+        }
+      }
+    }
+  ],
+  "outbounds": [
+    {
+      "protocol": "freedom",
+      "tag": "direct"
+    },
+    {
+      "protocol": "blackhole",
+      "tag": "block"
+    }
+  ]
+}
 EOF
 
 #install_startup_service_file
