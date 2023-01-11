@@ -21,8 +21,5 @@ rm -rf setup.sh && apt update && apt upgrade && apt install wget && apt install 
 - Ubuntu 18, 20 & 22 🙋
 - Debian 9, 10 & 11 💁
 - Register IP 🙆
-- Support Wildcard 🙅
-- Support Virtualization KVM & OpenVZ 🤷
-- Support Custom Xray-core / CF-RAY 🤦
 
 
