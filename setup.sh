@@ -5,38 +5,6 @@ MYIP=$(wget -qO- ipinfo.io/ip);
 echo "Checking VPS"
 clear
 
-# Edit file /etc/systemd/system/rc-local.service
-cat > /etc/systemd/system/rc-local.service <<-END
-[Unit]
-Description=/etc/rc.local
-ConditionPathExists=/etc/rc.local
-[Service]
-Type=forking
-ExecStart=/etc/rc.local start
-TimeoutSec=0
-StandardOutput=tty
-RemainAfterExit=yes
-SysVStartPriority=99
-[Install]
-WantedBy=multi-user.target
-END
-
-# nano /etc/rc.local
-cat > /etc/rc.local <<-END
-#!/bin/sh -e
-# rc.local
-# By default this script does nothing.
-screen -dmS badvpn badvpn-udpgw --listen-addr 127.0.0.1:7300 --max-clients 500
-exit 0
-END
-
-# Ubah izin akses
-chmod +x /etc/rc.local
-
-# enable rc local
-systemctl enable rc-local
-systemctl start rc-local.service
-
 # Getting
 rm -rf xray
 rm -rf install
@@ -541,40 +509,6 @@ cat << EOF > /usr/local/etc/xray/config.json
   ]
 }
 EOF
-
-#install_startup_service_file
-mkdir -p '/etc/systemd/system/xray.service.d'
-rm -rf /etc/systemd/system/xray@.service
-cat > /etc/systemd/system/xray.service << EOF
-[Unit]
-Description=Xray Service
-Documentation=https://github.com/xtls
-After=network.target nss-lookup.target
-
-[Service]
-User=nobody
-CapabilityBoundingSet=CAP_NET_ADMIN CAP_NET_BIND_SERVICE
-AmbientCapabilities=CAP_NET_ADMIN CAP_NET_BIND_SERVICE
-NoNewPrivileges=true
-ExecStart=/usr/local/bin/xray run -config /usr/local/etc/xray/config.json
-Restart=on-failure
-RestartPreventExitStatus=23
-LimitNPROC=10000
-LimitNOFILE=1000000
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-cat > /etc/systemd/system/xray.service.d/10-donot_touch_single_conf.conf << EOF
-# In case you have a good reason to do so, duplicate this file in the same directory and make your customizes there.
-# Or all changes you made will be lost!  # Refer: https://www.freedesktop.org/software/systemd/man/systemd.unit.html
-[Service]
-ExecStart=
-ExecStart=/usr/local/bin/xray run -confdir /usr/local/etc/xray/config.json
-EOF
-
-systemctl daemon-reload
 
 # Set Nginx Conf
 cat > /etc/nginx/nginx.conf << EOF
