@@ -574,6 +574,8 @@ ExecStart=
 ExecStart=/usr/local/bin/xray run -confdir /usr/local/etc/xray/config.json
 EOF
 
+systemctl daemon-reload
+
 # Set Nginx Conf
 cat > /etc/nginx/nginx.conf << EOF
 user www-data;
