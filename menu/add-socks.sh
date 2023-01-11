@@ -76,13 +76,13 @@ echo -e "Path WS non TLS      : /socks-wsnon" | tee -a log-create-user.log
 echo -e "ServiceName TLS      : socks-grpc" | tee -a log-create-user.log
 echo -e "ServiceName HTTP     : socks-grpcnon" | tee -a log-create-user.log
 echo -e "=========================================" | tee -a log-create-user.log
-echo -e "Link WS TLS        : $sockslink1" | tee -a log-create-user.log
+echo -e "Link WS TLS         : $sockslink1" | tee -a log-create-user.log
 echo -e "=========================================" | tee -a log-create-user.log
-echo -e "Link WS non TLS    : $sockslink2" | tee -a log-create-user.log
+echo -e "Link WS non TLS     : $sockslink2" | tee -a log-create-user.log
 echo -e "=========================================" | tee -a log-create-user.log
-echo -e "Link gRPC TLS      : $sockslink3" | tee -a log-create-user.log
+echo -e "Link gRPC TLS       : $sockslink3" | tee -a log-create-user.log
 echo -e "=========================================" | tee -a log-create-user.log
-echo -e "Link gRPC non TLS  : $sockslink4" | tee -a log-create-user.log
+echo -e "Link gRPC non TLS   : $sockslink4" | tee -a log-create-user.log
 echo -e "=========================================" | tee -a log-create-user.log
 echo -e "Expired On     : $exp" | tee -a log-create-user.log
 echo -e "=========================================" | tee -a log-create-user.log
