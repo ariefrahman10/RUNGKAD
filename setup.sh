@@ -55,7 +55,7 @@ domain=$(cat /usr/local/etc/xray/domain)
 curl https://get.acme.sh | sh
 source ~/.bashrc
 cd .acme.sh
-bash acme.sh --issue -d $domain --server letsencrypt --keylength ec-256 --fullchain-file /etc/xray/xray.crt --key-file /etc/xray/xray.key --standalone --force
+bash acme.sh --issue -d $domain --server letsencrypt --keylength ec-256 --fullchain-file /usr/local/etc/xray/xray.crt --key-file /usr/local/etc/xray/xray.key --standalone --force
 
 #setting
 uuid=$(cat /proc/sys/kernel/random/uuid)
