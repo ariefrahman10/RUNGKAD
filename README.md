@@ -5,7 +5,7 @@
   <img src="https://img.shields.io/badge/UPDATE_UPGRADE%20-green">
    
 ```html
-apt-get update && apt-get upgrade -y && update-grub && sleep 2 && reboot
+apt-get update && apt-get upgrade -y && sleep 2 && reboot
 ```
 
 ## Installation 👇
