@@ -27,7 +27,6 @@ ln -fs /usr/share/zoneinfo/Asia/Jakarta /etc/localtime
 sysctl -w net.ipv6.conf.all.disable_ipv6=1
 sysctl -w net.ipv6.conf.default.disable_ipv6=1
 mkdir /backup
-
 # Install Xray
 bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" - install --beta
 cp /usr/local/bin/xray /backup/xray.official.backup
@@ -65,20 +64,15 @@ source ~/.bashrc
 cd .acme.sh
 bash acme.sh --issue -d $domain --server letsencrypt --keylength ec-256 --fullchain-file /usr/local/etc/xray/xray.crt --key-file /usr/local/etc/xray/xray.key --standalone --force
 
-#setting
+# Setting
 uuid=$(cat /proc/sys/kernel/random/uuid)
-cipher="2022-blake3-aes-128-gcm"
-serverpsk=$(openssl rand -base64 16)
-userpsk=$(openssl rand -base64 16)
-echo "$serverpsk" > /usr/local/etc/xray/serverpsk
-# xray config
+# Set Xray Conf
 cat > /usr/local/etc/xray/config.json << END
 {
   "log": {
     "loglevel": "info"
   },
   "inbounds": [
-#PORT80#######################################################
     {
       "listen": "127.0.0.1",
       "port": "2001",
@@ -87,221 +81,8 @@ cat > /usr/local/etc/xray/config.json << END
         "decryption":"none",
         "clients": [
           {
-            "id": "admin"
-#vlesswsnon
-          }
-        ]
-      },
-      "streamSettings":{
-        "network": "ws",
-        "wsSettings": {
-          "path": "/vless-wsnon"
-        }
-      }
-    },
-    {
-      "listen": "127.0.0.1",
-      "port": "2002",
-      "protocol": "vmess",
-      "settings": {
-        "clients": [
-          {
-            "id": "admin",
-            "alterId": 0
-#vmesswsnon
-          }
-        ]
-      },
-      "streamSettings":{
-        "network": "ws",
-        "wsSettings": {
-          "path": "/vmess-wsnon"
-        }
-      }
-    },
-    {
-      "listen": "127.0.0.1",
-      "port": "2003",
-      "protocol": "trojan",
-      "settings": {
-        "decryption":"none",
-        "clients": [
-          {
-            "password": "admin"
-#trojanwsnon
-          }
-        ],
-        "udp": true
-      },
-      "streamSettings":{
-        "network": "ws",
-        "wsSettings": {
-          "path": "/trojan-wsnon"
-        }
-      }
-    },
-    {
-      "listen": "127.0.0.1",
-      "port": "2004",
-      "protocol": "shadowsocks",
-      "settings": {
-        "method": "$cipher",
-        "password": "$serverpsk",
-        "clients": [
-          {
-            "password": "$userpsk"
-#sswsnon
-          }
-        ],
-        "network": "tcp,udp"
-      },
-      "streamSettings":{
-        "network": "ws",
-        "wsSettings": {
-          "path": "/ss-wsnon"
-        }
-      }
-    },
-    {
-      "listen": "127.0.0.1",
-      "port": "2005",
-      "protocol": "socks",
-      "settings": {
-        "auth": "password",
-        "accounts": [
-            {
-              "user": "private",
-              "pass": "server"
-#sockswsnon
-            }
-          ],
-        "udp": true,
-        "ip": "127.0.0.1"
-      },
-      "streamSettings":{
-        "network": "ws",
-        "wsSettings": {
-          "path": "/socks-wsnon"
-        }
-      }
-    },    
-    {
-      "listen": "127.0.0.1",
-      "port": "2006",
-      "protocol": "vless",
-      "settings": {
-        "decryption":"none",
-        "clients": [
-          {
-            "id": "admin"
-#vlessgrpcnon
-          }
-        ]
-      },
-      "streamSettings":{
-        "network": "grpc",
-        "grpcSettings": {
-          "serviceName": "vless-grpcnon"
-        }
-      }
-    },
-    {
-      "listen": "127.0.0.1",
-      "port": "2007",
-      "protocol": "vmess",
-      "settings": {
-        "clients": [
-          {
-            "id": "admin",
-            "alterId": 0
-#vmessgrpcnon
-          }
-        ]
-      },
-      "streamSettings":{
-        "network": "grpc",
-        "grpcSettings": {
-          "serviceName": "vmess-grpcnon"
-        }
-      }
-    },
-    {
-      "listen": "127.0.0.1",
-      "port": "2008",
-      "protocol": "trojan",
-      "settings": {
-        "decryption":"none",
-        "clients": [
-          {
-            "password": "admin"
-#trojangrpcnon
-          }
-        ],
-        "udp": true
-      },
-      "streamSettings":{
-        "network": "grpc",
-        "grpcSettings": {
-          "serviceName": "trojan-grpcnon"
-        }
-      }
-    },
-    {
-      "listen": "127.0.0.1",
-      "port": "2009",
-      "protocol": "shadowsocks",
-      "settings": {
-        "method": "$cipher",
-        "password": "$serverpsk",
-        "clients": [
-          {
-            "password": "$userpsk"
-#ssgrpcnon
-          }
-        ],
-        "network": "tcp,udp"
-      },
-      "streamSettings":{
-        "network": "grpc",
-        "grpcSettings": {
-          "serviceName": "ss-grpcnon"
-        }
-      }
-    },  
-    {
-      "listen": "127.0.0.1",
-      "port": "2010",
-      "protocol": "socks",
-      "settings": {
-        "auth": "password",
-        "accounts": [
-            {
-              "user": "private",
-              "pass": "server"
-#socksgrpcnon
-            }
-          ],
-        "udp": true,
-        "ip": "127.0.0.1"
-      },
-      "streamSettings":{
-        "network": "grpc",
-        "grpcSettings": {
-          "serviceName": "socks-grpcnon"
-        }
-      }
-    },    
-#PORT443#######################################################
-    {
-      "listen": "127.0.0.1",
-      "port": "3001",
-      "protocol": "vless",
-      "settings": {
-        "decryption":"none",
-        "clients": [
-          {
-            "id": "admin"
-#vlessws
+            "id": "$uuid"
+#vless
           }
         ]
       },
@@ -314,14 +95,14 @@ cat > /usr/local/etc/xray/config.json << END
     },
     {
       "listen": "127.0.0.1",
-      "port": "3002",
+      "port": "2002",
       "protocol": "vmess",
       "settings": {
         "clients": [
           {
-            "id": "admin",
+            "id": "$uuid",
             "alterId": 0
-#vmessws
+#vmess
           }
         ]
       },
@@ -334,14 +115,14 @@ cat > /usr/local/etc/xray/config.json << END
     },
     {
       "listen": "127.0.0.1",
-      "port": "3003",
+      "port": "2003",
       "protocol": "trojan",
       "settings": {
         "decryption":"none",
         "clients": [
           {
-            "password": "admin"
-#trojanws
+            "password": "$uuid"
+#trojan
           }
         ],
         "udp": true
@@ -355,29 +136,7 @@ cat > /usr/local/etc/xray/config.json << END
     },
     {
       "listen": "127.0.0.1",
-      "port": "3004",
-      "protocol": "shadowsocks",
-      "settings": {
-        "method": "$cipher",
-        "password": "$serverpsk",
-        "clients": [
-          {
-            "password": "$userpsk"
-#ssws
-          }
-        ],
-        "network": "tcp,udp"
-      },
-      "streamSettings":{
-        "network": "ws",
-        "wsSettings": {
-          "path": "/ss-ws"
-        }
-      }
-    },
-    {
-      "listen": "127.0.0.1",
-      "port": "3005",
+      "port": "2004",
       "protocol": "socks",
       "settings": {
         "auth": "password",
@@ -385,7 +144,7 @@ cat > /usr/local/etc/xray/config.json << END
             {
               "user": "private",
               "pass": "server"
-#socksws
+#socks
             }
           ],
         "udp": true,
@@ -397,17 +156,17 @@ cat > /usr/local/etc/xray/config.json << END
           "path": "/socks-ws"
         }
       }
-    }, 
+    },
     {
       "listen": "127.0.0.1",
-      "port": "3006",
+      "port": "2005",
       "protocol": "vless",
       "settings": {
         "decryption":"none",
         "clients": [
           {
-            "id": "admin"
-#vlessgrpc
+            "id": "$uuid"
+#vless-grpc
           }
         ]
       },
@@ -420,14 +179,14 @@ cat > /usr/local/etc/xray/config.json << END
     },
     {
       "listen": "127.0.0.1",
-      "port": "3007",
+      "port": "2006",
       "protocol": "vmess",
       "settings": {
         "clients": [
           {
-            "id": "admin",
+            "id": "$uuid",
             "alterId": 0
-#vmessgrpc
+#vmess-grpc
           }
         ]
       },
@@ -440,14 +199,14 @@ cat > /usr/local/etc/xray/config.json << END
     },
     {
       "listen": "127.0.0.1",
-      "port": "3008",
+      "port": "2007",
       "protocol": "trojan",
       "settings": {
         "decryption":"none",
         "clients": [
           {
-            "password": "admin"
-#trojangrpc
+            "password": "$uuid"
+#trojan-grpc
           }
         ],
         "udp": true
@@ -461,46 +220,21 @@ cat > /usr/local/etc/xray/config.json << END
     },
     {
       "listen": "127.0.0.1",
-      "port": "3009",
-      "protocol": "shadowsocks",
+      "port": "2008",
+      "protocol": "vmess",
       "settings": {
-        "method": "$cipher",
-        "password": "$serverpsk",
         "clients": [
           {
-            "password": "$userpsk"
-#ssgrpc
+            "id": "$uuid",
+            "alterId": 0
+#vmessnontls
           }
-        ],
-        "network": "tcp,udp"
+        ]
       },
       "streamSettings":{
-        "network": "grpc",
-        "grpcSettings": {
-          "serviceName": "ss-grpc"
-        }
-      }
-    },    
-    {
-      "listen": "127.0.0.1",
-      "port": "3010",
-      "protocol": "socks",
-      "settings": {
-        "auth": "password",
-        "accounts": [
-            {
-              "user": "private",
-              "pass": "server"
-#socksgrpc
-            }
-          ],
-        "udp": true,
-        "ip": "127.0.0.1"
-      },
-      "streamSettings":{
-        "network": "grpc",
-        "grpcSettings": {
-          "serviceName": "socks-grpc"
+        "network": "ws",
+        "wsSettings": {
+          "path": "/"
         }
       }
     }
@@ -747,192 +481,130 @@ cat > /etc/nginx/conf.d/xray.conf << EOF
     server {
              listen 81;
              listen [::]:81;
+             root /var/www/html;
+        }
+    server {
              listen 80;
              listen [::]:80;
-             server_name *.$domain;
-             root /var/www/html;
-    location = /vless-wsnon { 
-        proxy_redirect off;
-        proxy_pass http://127.0.0.1:2001;
-        proxy_http_version 1.1;
-        proxy_set_header X-Real-IP \$remote_addr;
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        proxy_set_header Upgrade \$http_upgrade;
-        proxy_set_header Connection "upgrade";
-        proxy_set_header Host \$http_host;
-        }
-    location = /vmess-wsnon { 
-        proxy_redirect off;
-        proxy_pass http://127.0.0.1:2002;
-        proxy_http_version 1.1;
-        proxy_set_header X-Real-IP \$remote_addr;
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        proxy_set_header Upgrade \$http_upgrade;
-        proxy_set_header Connection "upgrade";
-        proxy_set_header Host \$http_host;
-        }
-    location = /trojan-wsnon { 
-        proxy_redirect off;
-        proxy_pass http://127.0.0.1:2003;
-        proxy_http_version 1.1;
-        proxy_set_header X-Real-IP \$remote_addr;
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        proxy_set_header Upgrade \$http_upgrade;
-        proxy_set_header Connection "upgrade";
-        proxy_set_header Host \$http_host;
-        }
-    location = /ss-wsnon { 
-        proxy_redirect off;
-        proxy_pass http://127.0.0.1:2004;
-        proxy_http_version 1.1;
-        proxy_set_header X-Real-IP \$remote_addr;
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        proxy_set_header Upgrade \$http_upgrade;
-        proxy_set_header Connection "upgrade";
-        proxy_set_header Host \$http_host;
-        }
-    location = /socks-wsnon { 
-        proxy_redirect off;
-        proxy_pass http://127.0.0.1:2005;
-        proxy_http_version 1.1;
-        proxy_set_header X-Real-IP \$remote_addr;
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        proxy_set_header Upgrade \$http_upgrade;
-        proxy_set_header Connection "upgrade";
-        proxy_set_header Host \$http_host;
-        }
-    location ^~ /vless-grpcnon {
-        proxy_redirect off;
-        grpc_set_header X-Real-IP \$remote_addr;
-        grpc_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        grpc_set_header Host \$http_host;
-        grpc_pass grpc://127.0.0.1:2006;
-        }
-    location ^~ /vmess-grpcnon {
-        proxy_redirect off;
-        grpc_set_header X-Real-IP \$remote_addr;
-        grpc_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        grpc_set_header Host \$http_host;
-        grpc_pass grpc://127.0.0.1:2007;
-        }
-    location ^~ /trojan-grpcnon {
-        proxy_redirect off;
-        grpc_set_header X-Real-IP \$remote_addr;
-        grpc_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        grpc_set_header Host \$http_host;
-        grpc_pass grpc://127.0.0.1:2008;
-        }
-    location ^~ /ss-grpcnon {
-        proxy_redirect off;
-        grpc_set_header X-Real-IP \$remote_addr;
-        grpc_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        grpc_set_header Host \$http_host;
-        grpc_pass grpc://127.0.0.1:2009;
-        }
-    location ^~ /socks-grpcnon {
-        proxy_redirect off;
-        grpc_set_header X-Real-IP \$remote_addr;
-        grpc_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        grpc_set_header Host \$http_host;
-        grpc_pass grpc://127.0.0.1:2010;
-        }
-}
-    server {
+             listen 2052;
+             listen [::]:2052;
+             listen 2082;
+             listen [::]:2082;
+             listen 2086;
+             listen [::]:2086;
+             listen 2095;
+             listen [::]:2095;
+             listen 8080;
+             listen [::]:8080;
+             listen 8880;
+             listen [::]:8880;
              listen 443 ssl http2 reuseport;
              listen [::]:443 http2 reuseport;	
+             listen 2053 ssl http2 reuseport;
+             listen [::]:2053 http2 reuseport;	
+             listen 2083 ssl http2 reuseport;
+             listen [::]:2083 http2 reuseport;	
+             listen 2087 ssl http2 reuseport;
+             listen [::]:2087 http2 reuseport;	
+             listen 2096 ssl http2 reuseport;
+             listen [::]:2096 http2 reuseport;	
+             listen 8443 ssl http2 reuseport;
+             listen [::]:8443 http2 reuseport;	
              server_name *.$domain;
              ssl_certificate /usr/local/etc/xray/xray.crt;
              ssl_certificate_key /usr/local/etc/xray/xray.key;
              ssl_ciphers EECDH+CHACHA20:EECDH+CHACHA20-draft:EECDH+ECDSA+AES128:EECDH+aRSA+AES128:RSA+AES128:EECDH+ECDSA+AES256:EECDH+aRSA+AES256:RSA+AES256:EECDH+ECDSA+3DES:EECDH+aRSA+3DES:RSA+3DES:!MD5;
              ssl_protocols TLSv1.1 TLSv1.2 TLSv1.3;
-
-    location = /vless-ws { 
-        proxy_redirect off;
-        proxy_pass http://127.0.0.1:3001;
-        proxy_http_version 1.1;
-        proxy_set_header X-Real-IP \$remote_addr;
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        proxy_set_header Upgrade \$http_upgrade;
-        proxy_set_header Connection "upgrade";
-        proxy_set_header Host \$http_host;
         }
-    location = /vmess-ws { 
-        proxy_redirect off;
-        proxy_pass http://127.0.0.1:3002;
-        proxy_http_version 1.1;
-        proxy_set_header X-Real-IP \$remote_addr;
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        proxy_set_header Upgrade \$http_upgrade;
-        proxy_set_header Connection "upgrade";
-        proxy_set_header Host \$http_host;
-        }
-    location = /trojan-ws { 
-        proxy_redirect off;
-        proxy_pass http://127.0.0.1:3003;
-        proxy_http_version 1.1;
-        proxy_set_header X-Real-IP \$remote_addr;
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        proxy_set_header Upgrade \$http_upgrade;
-        proxy_set_header Connection "upgrade";
-        proxy_set_header Host \$http_host;
-        }
-    location = /ss-ws { 
-        proxy_redirect off;
-        proxy_pass http://127.0.0.1:3004;
-        proxy_http_version 1.1;
-        proxy_set_header X-Real-IP \$remote_addr;
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        proxy_set_header Upgrade \$http_upgrade;
-        proxy_set_header Connection "upgrade";
-        proxy_set_header Host \$http_host;
-        }
-    location = /socks-ws { 
-        proxy_redirect off;
-        proxy_pass http://127.0.0.1:3005;
-        proxy_http_version 1.1;
-        proxy_set_header X-Real-IP \$remote_addr;
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        proxy_set_header Upgrade \$http_upgrade;
-        proxy_set_header Connection "upgrade";
-        proxy_set_header Host \$http_host;
-        }
-    location ^~ /vless-grpc {
-        proxy_redirect off;
-        grpc_set_header X-Real-IP \$remote_addr;
-        grpc_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        grpc_set_header Host \$http_host;
-        grpc_pass grpc://127.0.0.1:3006;
-        }
-    location ^~ /vmess-grpc {
-        proxy_redirect off;
-        grpc_set_header X-Real-IP \$remote_addr;
-        grpc_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        grpc_set_header Host \$http_host;
-        grpc_pass grpc://127.0.0.1:3007;
-        }
-    location ^~ /trojan-grpc {
-        proxy_redirect off;
-        grpc_set_header X-Real-IP \$remote_addr;
-        grpc_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        grpc_set_header Host \$http_host;
-        grpc_pass grpc://127.0.0.1:3008;
-        }
-    location ^~ /ss-grpc {
-        proxy_redirect off;
-        grpc_set_header X-Real-IP \$remote_addr;
-        grpc_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        grpc_set_header Host \$http_host;
-        grpc_pass grpc://127.0.0.1:3009;
-        }
-    location ^~ /socks-grpc {
-        proxy_redirect off;
-        grpc_set_header X-Real-IP \$remote_addr;
-        grpc_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        grpc_set_header Host \$http_host;
-        grpc_pass grpc://127.0.0.1:3010;
-        }
-}        
 EOF
+
+sed -i '$ ilocation = /vless-ws' /etc/nginx/conf.d/xray.conf
+sed -i '$ i{' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_redirect off;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_pass http://127.0.0.1:2001;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_http_version 1.1;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_set_header X-Real-IP \$remote_addr;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_set_header Upgrade \$http_upgrade;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_set_header Connection "upgrade";' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_set_header Host \$http_host;' /etc/nginx/conf.d/xray.conf
+sed -i '$ i}' /etc/nginx/conf.d/xray.conf
+
+sed -i '$ ilocation = /vmess-ws' /etc/nginx/conf.d/xray.conf
+sed -i '$ i{' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_redirect off;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_pass http://127.0.0.1:2002;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_http_version 1.1;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_set_header X-Real-IP \$remote_addr;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_set_header Upgrade \$http_upgrade;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_set_header Connection "upgrade";' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_set_header Host \$http_host;' /etc/nginx/conf.d/xray.conf
+sed -i '$ i}' /etc/nginx/conf.d/xray.conf
+
+sed -i '$ ilocation = /trojan-ws' /etc/nginx/conf.d/xray.conf
+sed -i '$ i{' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_redirect off;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_pass http://127.0.0.1:2003;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_http_version 1.1;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_set_header X-Real-IP \$remote_addr;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_set_header Upgrade \$http_upgrade;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_set_header Connection "upgrade";' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_set_header Host \$http_host;' /etc/nginx/conf.d/xray.conf
+sed -i '$ i}' /etc/nginx/conf.d/xray.conf
+
+sed -i '$ ilocation = /socks-ws' /etc/nginx/conf.d/xray.conf
+sed -i '$ i{' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_redirect off;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_pass http://127.0.0.1:2004;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_http_version 1.1;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_set_header X-Real-IP \$remote_addr;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_set_header Upgrade \$http_upgrade;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_set_header Connection "upgrade";' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_set_header Host \$http_host;' /etc/nginx/conf.d/xray.conf
+sed -i '$ i}' /etc/nginx/conf.d/xray.conf
+
+sed -i '$ ilocation ^~ /vless-grpc' /etc/nginx/conf.d/xray.conf
+sed -i '$ i{' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_redirect off;' /etc/nginx/conf.d/xray.conf
+sed -i '$ igrpc_set_header X-Real-IP \$remote_addr;' /etc/nginx/conf.d/xray.conf
+sed -i '$ igrpc_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;' /etc/nginx/conf.d/xray.conf
+sed -i '$ igrpc_set_header Host \$http_host;' /etc/nginx/conf.d/xray.conf
+sed -i '$ igrpc_pass grpc://127.0.0.1:2005;' /etc/nginx/conf.d/xray.conf
+sed -i '$ i}' /etc/nginx/conf.d/xray.conf
+
+sed -i '$ ilocation ^~ /vmess-grpc' /etc/nginx/conf.d/xray.conf
+sed -i '$ i{' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_redirect off;' /etc/nginx/conf.d/xray.conf
+sed -i '$ igrpc_set_header X-Real-IP \$remote_addr;' /etc/nginx/conf.d/xray.conf
+sed -i '$ igrpc_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;' /etc/nginx/conf.d/xray.conf
+sed -i '$ igrpc_set_header Host \$http_host;' /etc/nginx/conf.d/xray.conf
+sed -i '$ igrpc_pass grpc://127.0.0.1:2006;' /etc/nginx/conf.d/xray.conf
+sed -i '$ i}' /etc/nginx/conf.d/xray.conf
+
+sed -i '$ ilocation ^~ /trojan-grpc' /etc/nginx/conf.d/xray.conf
+sed -i '$ i{' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_redirect off;' /etc/nginx/conf.d/xray.conf
+sed -i '$ igrpc_set_header X-Real-IP \$remote_addr;' /etc/nginx/conf.d/xray.conf
+sed -i '$ igrpc_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;' /etc/nginx/conf.d/xray.conf
+sed -i '$ igrpc_set_header Host \$http_host;' /etc/nginx/conf.d/xray.conf
+sed -i '$ igrpc_pass grpc://127.0.0.1:2007;' /etc/nginx/conf.d/xray.conf
+sed -i '$ i}' /etc/nginx/conf.d/xray.conf
+
+sed -i '$ ilocation = /' /etc/nginx/conf.d/xray.conf
+sed -i '$ i{' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_redirect off;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_pass http://127.0.0.1:2008;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_http_version 1.1;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_set_header X-Real-IP \$remote_addr;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_set_header Upgrade \$http_upgrade;' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_set_header Connection "upgrade";' /etc/nginx/conf.d/xray.conf
+sed -i '$ iproxy_set_header Host \$http_host;' /etc/nginx/conf.d/xray.conf
+sed -i '$ i}' /etc/nginx/conf.d/xray.conf
+
 
 service nginx restart
 service xray restart
@@ -991,25 +663,15 @@ netfilter-persistent reload
 
 cd /usr/bin
 # Download Main Menu
-wget -O menu "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/menu.sh"
-wget -O m-vmess "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/m-vmess.sh"
-wget -O m-vless "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/m-vless.sh"
-wget -O m-trojan "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/m-trojan.sh"
-wget -O m-ss "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/m-ss.sh"
-wget -O m-socks "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/m-socks.sh"
-wget -O all-xray "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/all-xray.sh"
-wget -O xraymod "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/xraymod.sh"
-wget -O xrayofficial "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/xrayofficial.sh"
-wget -O kernel-bbr "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/kernel-bbr.sh"
-wget -O kernel-xanmod "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/kernel-xanmod.sh"
-wget -O restart "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/restart.sh"
-wget -O ganti-domain "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/ganti-domain.sh"
+wget -O menu "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD_V1/main/menu/menu.sh"
+wget -O all-xray "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD_V1/main/menu/all-xray.sh"
+wget -O xraymod "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD_V1/main/menu/xraymod.sh"
+wget -O xrayofficial "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD_V1/main/menu/xrayofficial.sh"
+wget -O kernel-bbr "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD_V1/main/menu/kernel-bbr.sh"
+wget -O kernel-xanmod "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD_V1/main/menu/kernel-xanmod.sh"
+wget -O restart "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD_V1/main/menu/restart.sh"
+wget -O ganti-domain "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD_V1/main/menu/ganti-domain.sh"
 chmod +x menu
-chmod +x m-vmess
-chmod +x m-vless
-chmod +x m-trojan
-chmod +x m-ss
-chmod +x m-socks
 chmod +x all-xray
 chmod +x xraymod
 chmod +x xrayofficial
@@ -1018,50 +680,10 @@ chmod +x kernel-xanmod
 chmod +x restart
 chmod +x ganti-domain
 
-# Vmess
-wget -O add-vmess "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/add-vmess.sh"
-wget -O del-vmess "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/del-vmess.sh"
-wget -O extend-vmess "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/extend-vmess.sh"
-chmod +x add-vmess
-chmod +x del-vmess
-chmod +x extend-vmess
-
-# Vless
-wget -O add-vless "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/add-vless.sh"
-wget -O del-vless "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/del-vless.sh"
-wget -O extend-vless "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/extend-vless.sh"
-chmod +x add-vless
-chmod +x del-vless
-chmod +x extend-vless
-
-# Trojan
-wget -O add-trojan "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/add-trojan.sh"
-wget -O del-trojan "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/del-trojan.sh"
-wget -O extend-trojan "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/extend-trojan.sh"
-chmod +x add-trojan
-chmod +x del-trojan
-chmod +x extend-trojan
-
-# Shadowsocks 2022
-wget -O add-ss "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/add-ss.sh"
-wget -O del-ss "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/del-ss.sh"
-wget -O extend-ss "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/extend-ss.sh"
-chmod +x add-ss
-chmod +x del-ss
-chmod +x extend-ss
-
-# Socks5
-wget -O add-socks "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/add-socks.sh"
-wget -O del-socks "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/del-socks.sh"
-wget -O extend-socks "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/extend-socks.sh"
-chmod +x add-socks
-chmod +x del-socks
-chmod +x extend-socks
-
 # All
-wget -O add-all "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/add-all.sh"
-wget -O del-all "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/del-all.sh"
-wget -O extend-all "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD/main/menu/extend-all.sh"
+wget -O add-all "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD_V1/main/menu/add-all.sh"
+wget -O del-all "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD_V1/main/menu/del-all.sh"
+wget -O extend-all "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD_V1/main/menu/extend-all.sh"
 chmod +x add-all
 chmod +x del-all
 chmod +x extend-all
@@ -1071,11 +693,17 @@ clear
 echo "==========================================================" | tee -a log-install.log
 echo "" | tee -a log-install.log
 echo "   >>> Service & Port" | tee -a log-install.log
-echo "   - Vmess WS/GRPC/HTTP              : 443, 80" | tee -a log-install.log
-echo "   - Vless WS/GRPC/HTTP              : 443, 80" | tee -a log-install.log
-echo "   - Trojan WS/GRPC/HTTP             : 443, 80" | tee -a log-install.log
-echo "   - Shadowsocks 2022 WS/GRPC/HTTP   : 443, 80" | tee -a log-install.log
-echo "   - Socks5 WS/GRPC/HTTP             : 443, 80" | tee -a log-install.log
+echo "   - Vmess Websocket             : 443, 80" | tee -a log-install.log
+echo "   - Vless Websocket             : 443" | tee -a log-install.log
+echo "   - Trojan Websocket            : 443" | tee -a log-install.log
+echo "   - Socks Websocket             : 443" | tee -a log-install.log
+echo "   - Vmess gRPC                  : 443" | tee -a log-install.log
+echo "   - Vless gRPC                  : 443" | tee -a log-install.log
+echo "   - Trojan gRPC                 : 443" | tee -a log-install.log
+echo "" | tee -a log-install.log
+echo "   >>> Alternative Ports" | tee -a log-install.log
+echo "   - HTTPS / TLS : 2053, 2083, 2087, 2096, 8443" | tee -a log-install.log
+echo "   - HTTP        : 8080, 8880, 2052, 2082, 2086, 2095" | tee -a log-install.log
 echo "" | tee -a log-install.log
 echo "==========================================================" | tee -a log-install.log
 echo ""
