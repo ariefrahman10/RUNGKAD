@@ -142,8 +142,8 @@ cat > /usr/local/etc/xray/config.json << END
         "auth": "password",
         "accounts": [
             {
-              "user": "private",
-              "pass": "server"
+              "user": "admin",
+              "pass": "admin"
 #socks
             }
           ],
