@@ -13,6 +13,11 @@ exit 0
 fi
 clear
 
+#install debian for xanmod kernel
+apt install gnupg -y
+apt install gnupg1 -y
+apt install gnupg2 -y
+
 # Getting
 rm -rf xray
 rm -rf install
