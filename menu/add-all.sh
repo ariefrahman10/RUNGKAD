@@ -4,8 +4,7 @@ clear
 until [[ $user =~ ^[a-zA-Z0-9_]+$ && ${CLIENT_EXISTS} == '0' ]]; do
 echo -e "=========================================================="
 echo -e "                [  Create All Account  ]                  "
-echo -e "                  Vmess, Vless, Trojan                    "
-echo -e "          Shadowsocks 2022, Shadowsocks, Socks5           "
+echo -e "              Vmess, Vless, Trojan, Socks5                "
 echo -e "=========================================================="
 read -rp "Username: " -e user
 CLIENT_EXISTS=$(grep -w $user /usr/local/etc/xray/config.json | wc -l)
@@ -89,7 +88,7 @@ vmlink2=`cat<<EOF
       "id": "${uuid}",
       "aid": "0",
       "net": "ws",
-      "path": "/bebas",
+      "path": "/multipath",
       "type": "none",
       "host": "$domain",
       "tls": "none"
