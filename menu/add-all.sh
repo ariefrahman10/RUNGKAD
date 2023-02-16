@@ -127,8 +127,7 @@ systemctl restart xray
 clear
 echo -e "==========================================================" | tee -a log-create-user.log
 echo -e "                   [ All Account VPN ]                    " | tee -a log-create-user.log
-echo -e "                  Vmess, Vless, Trojan                    " | tee -a log-create-user.log
-echo -e "          Shadowsocks 2022, Shadowsocks, Socks5           " | tee -a log-create-user.log
+echo -e "              Vmess, Vless, Trojan, Socks5                " | tee -a log-create-user.log
 echo -e "==========================================================" | tee -a log-create-user.log
 echo -e "Domain           : $domain" | tee -a log-create-user.log
 echo -e "Port TLS         : 443" | tee -a log-create-user.log
