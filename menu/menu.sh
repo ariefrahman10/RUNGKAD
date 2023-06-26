@@ -44,7 +44,6 @@ echo " [ 3 ] Change Xray-core Official"
 echo " [ 4 ] Update kernel + TCP BBR"
 echo " [ 5 ] Custom kernel XanMod"
 echo " [ 6 ] Restart All Service"
-echo " [ 7 ] Change Domain"
 echo ""
 echo " Press X or [ Ctrl + C ] To Exit Script"
 echo ""
@@ -59,7 +58,6 @@ case $opt in
 4) clear ; kernel-bbr ;;
 5) clear ; kernel-xanmod ;;
 6) clear ; restart ;;
-7) clear ; ganti-domain ;;
 x) exit ;;
 *) echo "Anda salah input" ; sleep 0.5 ; menu ;;
 esac
