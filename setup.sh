@@ -504,7 +504,6 @@ wget -O xrayofficial "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD_V1
 wget -O kernel-bbr "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD_V1/main/menu/kernel-bbr.sh"
 wget -O kernel-xanmod "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD_V1/main/menu/kernel-xanmod.sh"
 wget -O restart "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD_V1/main/menu/restart.sh"
-wget -O ganti-domain "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD_V1/main/menu/ganti-domain.sh"
 chmod +x menu
 chmod +x all-xray
 chmod +x xraymod
@@ -512,7 +511,6 @@ chmod +x xrayofficial
 chmod +x kernel-bbr
 chmod +x kernel-xanmod
 chmod +x restart
-chmod +x ganti-domain
 
 # All
 wget -O add-all "https://raw.githubusercontent.com/ariefrahman10/RUNGKAD_V1/main/menu/add-all.sh"
